@@ -1,0 +1,25 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".editorconfig" />
+    <File Path="Directory.Build.props" />
+    <File Path="Directory.Packages.props" />
+  </Folder>
+  <Folder Name="/src/" />
+  <Folder Name="/src/CourierHub.Abstractions/">
+    <Project Path="src/CourierHub.Abstractions/CourierHub.Abstractions.csproj" Id="329387b4-268d-453a-9e11-daf7dcb6bfd7" />
+  </Folder>
+  <Folder Name="/src/CourierHub.Core/">
+    <Project Path="src/CourierHub.Core/CourierHub.Core.csproj" Id="be44bb69-5632-4a04-8ddb-c4ec0150dbda" />
+  </Folder>
+  <Folder Name="/src/CourierHub.Dpd/">
+    <Project Path="src/CourierHub.Dpd/CourierHub.Dpd.csproj" Id="3978d25c-357c-4508-b880-3827ba845508" />
+  </Folder>
+  <Folder Name="/src/CourierHub.Furgonetka/">
+    <Project Path="src/CourierHub.Furgonetka/CourierHub.Furgonetka.csproj" Id="a380cf98-abea-4694-a9de-88f034d14e89" />
+  </Folder>
+  <Folder Name="/src/CourierHub.InPost/">
+    <Project Path="src/CourierHub.InPost/CourierHub.InPost.csproj" Id="4505b01c-90bb-408c-b95b-41793cc8034a" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Folder Name="/tests/CourierHub.UnitTests/" />
+</Solution>

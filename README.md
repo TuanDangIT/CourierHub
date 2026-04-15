@@ -1,0 +1,1 @@
+CourierHub is a high-performance, plugin-based .NET library that abstracts multiple courier services into a single, standardized API. Instead of managing disparate integrations for InPost, DHL, or UPS, developers can use a unified domain model to create parcels, fetch labels, and track shipments with a few lines of code.

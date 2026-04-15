@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\CourierHub.Abstractions\CourierHub.Abstractions.csproj" />
+    <ProjectReference Include="..\CourierHub.Core\CourierHub.Core.csproj" />
+  </ItemGroup>
+
+</Project>
