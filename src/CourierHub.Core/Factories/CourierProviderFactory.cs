@@ -7,14 +7,21 @@ namespace CourierHub.Core.Factories
 {
     internal class CourierProviderFactory : ICourierProviderFactory
     {
-        public IEnumerable<ICourierProvider> GetAllProviders()
+        private readonly IEnumerable<ICourierProvider> _providers;
+
+        public CourierProviderFactory(IEnumerable<ICourierProvider> providers)
         {
-            throw new NotImplementedException();
+            _providers = providers;
         }
 
         public ICourierProvider GetProvider(string providerName)
         {
-            throw new NotImplementedException();
+            var provider = _providers.FirstOrDefault(p =>
+                p.Name.Equals(providerName, StringComparison.OrdinalIgnoreCase)) 
+                ?? throw new KeyNotFoundException($"Courier provider '{providerName}' is not registered.");
+            return provider;
         }
+
+        public IEnumerable<ICourierProvider> GetAllProviders() => _providers;
     }
 }

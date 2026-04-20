@@ -20,6 +20,7 @@
   <Folder Name="/src/CourierHub.InPost/">
     <Project Path="src/CourierHub.InPost/CourierHub.InPost.csproj" Id="4505b01c-90bb-408c-b95b-41793cc8034a" />
   </Folder>
-  <Folder Name="/tests/" />
-  <Folder Name="/tests/CourierHub.UnitTests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/CourierHub.Core.Tests/CourierHub.Core.Tests.csproj" Id="94f96e76-30c2-4398-8ccb-0696ca99cf63" />
+  </Folder>
 </Solution>

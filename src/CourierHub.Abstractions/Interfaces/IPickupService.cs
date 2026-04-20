@@ -4,7 +4,7 @@ using System.Text;
 
 namespace CourierHub.Abstractions.Interfaces
 {
-    internal interface IPickupService
+    public interface IPickupService
     {
     }
 }

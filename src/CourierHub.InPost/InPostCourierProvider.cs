@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CourierHub.Abstractions.Interfaces
+namespace CourierHub.InPost
 {
-    public interface IFinancialService
+    internal class InPostCourierProvider
     {
     }
 }
