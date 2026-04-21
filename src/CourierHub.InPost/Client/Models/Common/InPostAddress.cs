@@ -8,7 +8,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents a InPost specific address format used for sender and recipient information in the InPost API.
 /// </summary>
-public record InPostAddress
+internal sealed class InPostAddress
 {
     /// <summary>
     /// The street name, optionally including the street type prefix (e.g., "Wiejska" or "ul. Wiejska").

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CourierHub.Abstractions.Models.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -14,7 +15,7 @@ public record CreateParcelResponse
     /// </summary>
     /// <remarks>
     /// This ID is used for subsequent API calls to retrieve labels, cancel shipments,
-    /// or update parcel information.
+    /// or update parcel information depending on courier provider. Some actions might be not allowed.
     /// </remarks>
     public required string ParcelId { get; init; }
 
@@ -31,6 +32,7 @@ public record CreateParcelResponse
     /// The name of the courier provider that processed this request.
     /// </summary>
     public required string CourierName { get; init; }
+
 
     /// <summary>
     /// Additional metadata returned by the courier provider.

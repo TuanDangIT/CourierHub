@@ -5,9 +5,9 @@ using System.Text;
 namespace CourierHub.InPost.Client.Models.Common;
 
 /// <summary>
-/// Represents insurance details for a parcel, including the insured amount and currency.
+/// Represents insurance details for a parcel specific to InPost, including the insured amount and currency.
 /// </summary>
-public class InPostInsurance
+internal sealed class InPostInsurance
 {
     /// <summary>
     /// The insured amount for the parcel.

@@ -7,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents the weight of a parcel specific to InPost.
 /// </summary>
-public record InPostWeight
+internal sealed class InPostWeight
 {
     /// <summary>
     /// The weight value.
@@ -17,5 +17,5 @@ public record InPostWeight
     /// <summary>
     /// The unit of measurement (e.g., "kg", "g", "lbs").
     /// </summary>
-    public required string Unit { get; init; } 
+    public required string Unit { get; init; }
 }

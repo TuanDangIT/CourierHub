@@ -43,8 +43,8 @@ public record Address
     /// <remarks>Defaults to "PL" for Poland.</remarks>
     public string CountryCode { get; init; } = "PL";
 
-    /// <summary>
-    /// The country name (e.g., "Poland", "Germany", "France").
-    /// </summary>
-    public required string Country {  get; init; }
+    ///// <summary>
+    ///// The country name (e.g., "Poland", "Germany", "France").
+    ///// </summary>
+    //public required string Country {  get; init; }
 }

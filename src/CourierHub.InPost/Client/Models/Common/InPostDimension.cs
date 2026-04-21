@@ -7,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents the physical dimensions of a parcel specific to InPost.
 /// </summary>
-public record InPostDimension
+internal sealed class InPostDimension
 {
     /// <summary>
     /// The length of the parcel.
@@ -32,5 +32,5 @@ public record InPostDimension
     /// <summary>
     /// The flag indicating whether the dimensions are non-standard (e.g., irregular shape, oversized).
     /// </summary>
-    public bool? IsNonStandad { get; init; }
+    public bool? IsNonStandard { get; init; }
 }

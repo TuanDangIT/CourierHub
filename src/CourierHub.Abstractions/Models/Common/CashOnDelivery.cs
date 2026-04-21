@@ -7,7 +7,7 @@ namespace CourierHub.Abstractions.Models.Common
     /// <summary>
     /// Represents the cash on delivery payment details, including the amount to be collected and the currency code.
     /// </summary>
-    public class CashOnDelivery
+    public record CashOnDelivery
     {
         /// <summary>
         /// Amount to be collected from the recipient upon delivery.

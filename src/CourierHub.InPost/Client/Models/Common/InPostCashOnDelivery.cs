@@ -7,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents cash on delivery (COD) details for a parcel specific to InPost, including the amount to be collected and the currency code.
 /// </summary>
-public class InPostCashOnDelivery
+internal sealed class InPostCashOnDelivery
 {
     /// <summary>
     /// Amount to be collected from the recipient upon delivery.

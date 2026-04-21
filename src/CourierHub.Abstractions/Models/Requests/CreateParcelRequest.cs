@@ -68,12 +68,17 @@ public record CreateParcelRequest
     /// <summary>
     /// Is Return shipment. Indicates whether the parcel is being sent as a return to the sender. This is optional and may not be supported by all courier providers. If true, it signifies that the parcel is intended to be returned to the sender rather than delivered to a recipient. The specific handling of return shipments is determined by each courier provider.
     /// </summary>
-    public bool? IsReturn { get; init; } = false;
+    public bool? IsReturn { get; init; } 
     
     /// <summary>
     /// Additional comments, if applicable. This is optional and may not be supported by all courier providers.
     /// </summary>
-    public string? Comment { get; init; }
+    public string? Comments { get; init; }
+
+    /// <summary>
+    /// Additional services for the shipment ex. "email" or "sms", if applicable. This is optional.
+    /// </summary>
+    public IEnumerable<string>? AdditionalServices { get; init; }
 
     /// <summary>
     /// Courier-specific metadata and optional parameters.

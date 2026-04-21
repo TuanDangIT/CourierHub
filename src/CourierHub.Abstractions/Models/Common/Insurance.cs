@@ -7,7 +7,7 @@ namespace CourierHub.Abstractions.Models.Common
     /// <summary>
     /// Represents insurance details for a parcel, including the insured amount and currency.
     /// </summary>
-    public class Insurance
+    public record Insurance
     {
         /// <summary>
         /// The insured amount for the parcel.
