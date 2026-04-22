@@ -23,7 +23,7 @@ internal sealed class InPostMapper
     /// <summary>
     /// Maps a standardized parcel creation request to InPost-specific format.
     /// </summary>
-    public static InPostCreateParcelRequest MapToCreateParcelRequest(CreateParcelRequest source)
+    public InPostCreateParcelRequest MapToCreateParcelRequest(CreateParcelRequest source)
     {
         return new InPostCreateParcelRequest
         {
@@ -50,7 +50,7 @@ internal sealed class InPostMapper
     /// <summary>
     /// Maps an InPost API response to a standardized parcel creation response.
     /// </summary>
-    public static CreateParcelResponse MapToCreateParcelResponse(InPostCreateParcelResponse source)
+    public CreateParcelResponse MapToCreateParcelResponse(InPostCreateParcelResponse source)
     {
         return new CreateParcelResponse
         {

@@ -3,30 +3,46 @@ using CourierHub.Abstractions.Models.Requests;
 using CourierHub.Abstractions.Models.Responses;
 using CourierHub.InPost.Client;
 using CourierHub.InPost.Mappers;
-using System;
-using System.Collections.Generic;
-using System.Text;
+using Microsoft.Extensions.Logging;
 
 namespace CourierHub.InPost.Services
 {
-    internal class InPostParcelService : IParcelService
+    internal sealed class InPostParcelService : IParcelService
     {
         private readonly InPostHttpClient _httpClient;
         private readonly InPostMapper _mapper;
+        private readonly ILogger? _logger;
 
-        public InPostParcelService(InPostHttpClient httpClient, InPostMapper mapper)
+        public InPostParcelService(InPostHttpClient httpClient, InPostMapper mapper, ILogger? logger = default)
         {
             _httpClient = httpClient;
             _mapper = mapper;
-        }
-        public Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request)
-        {
-            throw new NotImplementedException();
+            _logger = logger;
         }
 
-        public Task<byte[]> GetLabelAsync(string parcelId)
+        /// <summary>
+        /// Creates a new InPost shipment by mapping the unified request to InPost API contract,
+        /// sending the request, and mapping the API response back to unified response model.
+        /// </summary>
+        public async Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request)
         {
-            throw new NotImplementedException();
+            var inPostRequest = _mapper.MapToCreateParcelRequest(request);
+            var inPostResponse = await _httpClient.CreateShipmentAsync(inPostRequest);
+
+            return _mapper.MapToCreateParcelResponse(inPostResponse);
+        }
+
+        /// <summary>
+        /// Retrieves shipment label bytes for the given parcel identifier.
+        /// </summary>
+        public async Task<byte[]> GetLabelAsync(string parcelId)
+        {
+            if (string.IsNullOrWhiteSpace(parcelId))
+            {
+                throw new ArgumentException("Parcel ID cannot be null or empty.", nameof(parcelId));
+            }
+
+            return await _httpClient.GetLabelAsync(parcelId);
         }
     }
 }

@@ -21,13 +21,13 @@ namespace CourierHub.Core.Base
         /// </summary>
         /// <remarks>Intended for use by derived classes to facilitate consistent logging. The logger
         /// instance is typically configured by the containing class or its dependencies.</remarks>
-        protected readonly ILogger _logger;
+        protected readonly ILogger? _logger;
 
         /// <summary>
         /// Initializes a new instance of the CourierProviderBase class with the specified logger.
         /// </summary>
         /// <param name="logger">The logger instance used to record diagnostic and operational information. Cannot be null.</param>
-        protected CourierProviderBase(ILogger logger)
+        protected CourierProviderBase(ILogger? logger = default)
         {
             _logger = logger;
         }
@@ -67,9 +67,7 @@ namespace CourierHub.Core.Base
         /// </summary>
         /// <param name="action">The action being executed.</param>
         /// <param name="identifier">The identifier associated with the request.</param>
-        protected void LogRequest(string action, string identifier)
-        {
-            _logger.LogInformation("[{CourierName}] Executing {Action} for {Id}", Name, action, identifier);
-        }
+        protected void LogRequest(string action, string identifier) 
+            => _logger?.LogInformation("[{CourierName}] Executing {Action} for {Id}", Name, action, identifier);
     }
 }

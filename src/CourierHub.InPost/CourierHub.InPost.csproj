@@ -5,8 +5,4 @@
     <ProjectReference Include="..\CourierHub.Core\CourierHub.Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-  </ItemGroup>
-
 </Project>
