@@ -1,26 +1,20 @@
-﻿using CourierHub.Core.Base;
+﻿using CourierHub.Abstractions.Enums;
+using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
 using CourierHub.InPost.Client.Models.Request;
 using CourierHub.InPost.Client.Models.Responses;
 using CourierHub.InPost.Configuration;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
-using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace CourierHub.InPost.Client
 {
+    /// <summary>
+    /// InPostHttpClient is a specialized HTTP client for interacting with the InPost API.
+    /// </summary>
     internal sealed class InPostHttpClient : HttpClientBase
     {
-        private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNameCaseInsensitive = true
-        };
-
         private readonly InPostOptions _inPostOptions;
 
         public InPostHttpClient(HttpClient httpClient, InPostOptions inPostOptions, HttpResilienceOptions? resilienceOptions = default, ILogger? logger = default)
@@ -35,74 +29,43 @@ namespace CourierHub.InPost.Client
         /// <summary>
         /// Creates an InPost shipment and returns the normalized InPost response DTO.
         /// </summary>
-        public async Task<InPostCreateParcelResponse> CreateShipmentAsync(InPostCreateParcelRequest shipment, CancellationToken cancellationToken = default)
+        /// <param name="shipment">The shipment details to be created.</param>
+        /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the InPostCreateParcelResponse DTO.</returns>
+        public Task<InPostCreateParcelResponse> CreateShipmentAsync(InPostCreateParcelRequest shipment, CancellationToken cancellationToken = default)
         {
-            var serializedShipment = JsonSerializer.Serialize(shipment, SerializerOptions);
-            using var jsonContent = new StringContent(serializedShipment, Encoding.UTF8, "application/json");
-
             var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments";
-            using var httpResponse = await _httpClient.PostAsync(endpoint, jsonContent, cancellationToken);
-            var json = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+            return PostAsync(
+                endpoint,
+                shipment,
+                InPostJsonContext.Default.InPostCreateParcelRequest,
+                InPostJsonContext.Default.InPostCreateParcelResponse,
+                cancellationToken: cancellationToken);
+        }
 
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                var errorMessage = ExtractErrorMessage(json);
-                throw new HttpRequestException($"HTTP request failed ({(int)httpResponse.StatusCode}): {errorMessage}");
-            }
-
-            var result = JsonSerializer.Deserialize<InPostCreateParcelResponse>(json, SerializerOptions);
-            return result ?? throw new InvalidOperationException("InPost API returned an empty or invalid shipment response.");
+        /// <summary>
+        /// Gets shipment details for the specified parcel identifier.
+        /// </summary>
+        /// <param name="id">The identifier of the parcel to retrieve.</param>
+        /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the InPostGetParcelResponse DTO.</returns>
+        public Task<InPostGetParcelResponse> GetParcelAsync(string id, CancellationToken cancellationToken = default)
+        {
+            var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments?id={id}";
+            return GetAsync(endpoint, InPostJsonContext.Default.InPostGetParcelResponse, cancellationToken: cancellationToken);
         }
 
         /// <summary>
         /// Downloads shipment label bytes for the specified parcel identifier.
         /// </summary>
-        public async Task<byte[]> GetLabelAsync(string parcelId, string format = "Pdf", CancellationToken cancellationToken = default)
+        /// <param name="parcelId">The identifier of the parcel for which to download the label.</param>
+        /// <param name="format">The desired format of the label (e.g., PDF, ZPL, ELP). Default is PDF.</param>
+        /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
+        /// <returns>A task that represents the asynchronous operation, containing the label bytes.</returns>
+        public Task<byte[]> GetLabelAsync(string parcelId, LabelFormat format = LabelFormat.Pdf, CancellationToken cancellationToken = default)
         {
             var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments/{parcelId}/label?format={format}";
-            using var httpResponse = await _httpClient.GetAsync(endpoint, cancellationToken);
-
-            if (!httpResponse.IsSuccessStatusCode)
-            {
-                var json = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
-                var errorMessage = ExtractErrorMessage(json);
-                throw new HttpRequestException($"Label download failed ({(int)httpResponse.StatusCode}): {errorMessage}");
-            }
-
-            return await httpResponse.Content.ReadAsByteArrayAsync(cancellationToken);
-        }
-
-        private static string ExtractErrorMessage(string json)
-        {
-            try
-            {
-                using var errorJsonDocument = JsonDocument.Parse(json);
-                var root = errorJsonDocument.RootElement;
-
-                if (root.TryGetProperty("error", out var errorProperty) && errorProperty.ValueKind == JsonValueKind.String)
-                {
-                    return errorProperty.GetString() ?? "Unknown error.";
-                }
-
-                if (root.TryGetProperty("message", out var messageProperty) && messageProperty.ValueKind == JsonValueKind.String)
-                {
-                    return messageProperty.GetString() ?? "Unknown error.";
-                }
-
-                if (root.TryGetProperty("errors", out var errorsProperty) && errorsProperty.ValueKind == JsonValueKind.Array)
-                {
-                    foreach (var item in errorsProperty.EnumerateArray())
-                    {
-                        return item.ToString();
-                    }
-                }
-            }
-            catch
-            {
-                // Ignore parse failures and fallback to raw payload.
-            }
-
-            return string.IsNullOrWhiteSpace(json) ? "Unknown error." : json;
+            return GetAsync(endpoint, cancellationToken: cancellationToken);
         }
     }
 }

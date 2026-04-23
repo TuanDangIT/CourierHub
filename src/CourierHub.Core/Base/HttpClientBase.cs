@@ -2,8 +2,9 @@
 using Microsoft.Extensions.Logging;
 using System.Net;
 using System.Net.Http.Json;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
-using System.Linq;
 
 namespace CourierHub.Core.Base;
 
@@ -28,6 +29,16 @@ public abstract class HttpClientBase
         HttpStatusCode.ServiceUnavailable,
         HttpStatusCode.GatewayTimeout
     ];
+
+    /// <summary>
+    /// Serializer options configured for web APIs, using snake_case naming and ignoring null values. This configuration is optimized for typical REST API interactions and is used across all JSON serialization/deserialization operations in the class.
+    /// </summary>
+    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+        PropertyNameCaseInsensitive = true
+    };
 
     /// <summary>
     /// Provides access to the HTTP client.
@@ -139,6 +150,39 @@ public abstract class HttpClientBase
 
             var result = await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken);
             return result ?? throw new InvalidOperationException("API returned an empty response.");
+        }, cancellationToken);
+    }
+
+    /// <summary>
+    /// Sends a GET request and returns the response body as raw bytes.
+    /// Applies transient retry behavior based on configured resilience options.
+    /// </summary>
+    /// <param name="url">The relative or absolute endpoint URL.</param>
+    /// <param name="configureRequest">Optional callback for customizing the outgoing HTTP request (for example, adding per-request headers).</param>
+    /// <param name="cancellationToken">A token to cancel the HTTP operation.</param>
+    /// <returns>The response body as a byte array.</returns>
+    /// <exception cref="HttpRequestException">Thrown when the HTTP response indicates a non-success status code.</exception>
+    protected async Task<byte[]> GetAsync(
+        string url,
+        Action<HttpRequestMessage>? configureRequest = null,
+        CancellationToken cancellationToken = default)
+    {
+        return await ExecuteWithResilienceAsync(async cancellationToken =>
+        {
+            using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+            configureRequest?.Invoke(httpRequest);
+
+            using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+                _logger?.LogError("API Error at {Url}: {Status} - {Content}", url, response.StatusCode, errorContent);
+                response.EnsureSuccessStatusCode();
+            }
+
+            return await response.Content.ReadAsByteArrayAsync(cancellationToken);
         }, cancellationToken);
     }
 

@@ -19,7 +19,7 @@ internal sealed class InPostCreateParcelResponse
     /// <summary>
     /// The Identifier of the created shipment in the InPost system. This is a unique integer assigned by InPost to each shipment and can be used for tracking and reference purposes within the InPost API.
     /// </summary>
-    public int Id { get; init; }
+    public required int Id { get; init; }
 
     /// <summary>
     /// The current status of the shipment in the InPost system.
