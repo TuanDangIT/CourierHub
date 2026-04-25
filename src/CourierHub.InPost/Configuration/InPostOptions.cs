@@ -25,9 +25,4 @@ public sealed class InPostOptions
     /// Defaults to production URL.
     /// </summary>
     public string BaseUrl { get; set; } = "https://api-shipx-pl.inpost.tech";
-
-    /// <summary>
-    /// HTTP resilience settings applied to InPost requests (retries, backoff, jitter).
-    /// </summary>
-    public HttpResilienceOptions Resilience { get; set; } = new();
 }

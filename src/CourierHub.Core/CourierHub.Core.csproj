@@ -8,4 +8,8 @@
     <ProjectReference Include="..\CourierHub.Abstractions\CourierHub.Abstractions.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="DependencyInjection\" />
+  </ItemGroup>
+
 </Project>

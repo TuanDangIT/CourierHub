@@ -5,6 +5,9 @@ using System.Text.Json.Serialization;
 
 namespace CourierHub.InPost.Client;
 
+/// <summary>
+/// InPost JSON context for source generation of JSON serialization and deserialization related to InPost API interactions.
+/// </summary>
 [JsonSourceGenerationOptions(
     JsonSerializerDefaults.Web,
     PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower,

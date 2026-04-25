@@ -23,7 +23,7 @@ public record Dimension
     public required decimal Height { get; init; }
 
     /// <summary>
-    /// The unit of measurement (e.g., "mm", "cm", "m", "inches").
+    /// The unit of measurement (e.g., "mm", "cm", "m").
     /// Defaults to "mm" (millimeters).
     /// </summary>
     public string Unit { get; init; } = "mm";

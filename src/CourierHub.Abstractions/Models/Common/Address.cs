@@ -6,8 +6,6 @@ namespace CourierHub.Abstractions.Models.Common;
 
 /// <summary>
 /// Represents a standardized address used across all courier providers.
-/// Supports both separated address components (Street + House Number) and combined formats
-/// to accommodate different courier API requirements.
 /// </summary>
 public record Address
 {
@@ -33,7 +31,7 @@ public record Address
     public required string City { get; init; }
 
     /// <summary>
-    /// The postal code in Polish format (XX-XXX, e.g., "00-001", "31-011").
+    /// The postal code (XX-XXX, e.g., "00-001", "31-011").
     /// </summary>
     public required string PostalCode { get; init; }
 
@@ -42,9 +40,4 @@ public record Address
     /// </summary>
     /// <remarks>Defaults to "PL" for Poland.</remarks>
     public string CountryCode { get; init; } = "PL";
-
-    ///// <summary>
-    ///// The country name (e.g., "Poland", "Germany", "France").
-    ///// </summary>
-    //public required string Country {  get; init; }
 }

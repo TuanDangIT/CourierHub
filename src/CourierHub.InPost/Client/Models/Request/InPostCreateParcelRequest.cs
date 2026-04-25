@@ -36,7 +36,7 @@ internal sealed class InPostCreateParcelRequest
     public InPostCashOnDelivery? Cod { get; init; }
 
     /// <summary>
-    /// Service code or identifier for the courier service to be used.
+    /// Service code used by InPost.
     /// </summary>
     public required string Service { get; init; }
 

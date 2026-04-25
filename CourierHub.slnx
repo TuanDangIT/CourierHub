@@ -14,6 +14,9 @@
   <Folder Name="/src/CourierHub.Dpd/">
     <Project Path="src/CourierHub.Dpd/CourierHub.Dpd.csproj" Id="3978d25c-357c-4508-b880-3827ba845508" />
   </Folder>
+  <Folder Name="/src/CourierHub.Extensions.DependencyInjection/">
+    <Project Path="src/CourierHub.Extensions.DependencyInjection/CourierHub.Extensions.DependencyInjection.csproj" Id="e499d389-62d9-4c3f-88cb-63e1ba354d3c" />
+  </Folder>
   <Folder Name="/src/CourierHub.Furgonetka/">
     <Project Path="src/CourierHub.Furgonetka/CourierHub.Furgonetka.csproj" Id="a380cf98-abea-4694-a9de-88f034d14e89" />
   </Folder>

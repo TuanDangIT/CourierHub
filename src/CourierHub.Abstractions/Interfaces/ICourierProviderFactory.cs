@@ -17,7 +17,7 @@ namespace CourierHub.Abstractions.Interfaces
         ICourierProvider GetProvider(string providerName);
 
         /// <summary>
-        /// Returns all registered courier providers. Useful for UI dropdowns.
+        /// Returns all registered courier providers. 
         /// </summary>
         /// <returns>An enumerable collection of all registered courier providers.</returns>
         IEnumerable<ICourierProvider> GetAllProviders();

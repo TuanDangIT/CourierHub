@@ -14,27 +14,27 @@ namespace CourierHub.Abstractions.Interfaces
     public interface ICourierProvider
     {
         /// <summary>
-        /// Gets the name associated with the current instance.
+        /// Tthe name associated with the current instance.
         /// </summary>
         string Name { get; }
         /// <summary>
-        /// Gets the parcel service used to manage parcel operations.
+        /// The parcel service used to manage parcel operations.
         /// </summary>
         IParcelService? ParcelService { get; }
         /// <summary>
-        /// Gets the locker service used to manage lockers.
+        /// The locker service used to manage lockers.
         /// </summary>
         ILockerService? Lockers { get; }
         /// <summary>
-        /// Gets the pickup service used to manage pickups.
+        /// The pickup service used to manage pickups.
         /// </summary>
         IPickupService? Pickups { get; }
         /// <summary>
-        /// Gets the service used to process parcel returns.
+        /// The service used to process parcel returns.
         /// </summary>
         IReturnService? Returns { get; }
         /// <summary>
-        /// Gets the financial service used for estimating parcel costs and managing COD.
+        /// The financial service used for estimating parcel costs and managing COD.
         /// </summary>
         IFinancialService? Finance { get; }
     }

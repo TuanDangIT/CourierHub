@@ -8,64 +8,73 @@ using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;
 
-namespace CourierHub.InPost.Client
+namespace CourierHub.InPost.Client;
+
+/// <summary>
+/// InPostHttpClient is a specialized HTTP client for interacting with the InPost API.
+/// </summary>
+internal sealed class InPostHttpClient : HttpClientBase
 {
     /// <summary>
-    /// InPostHttpClient is a specialized HTTP client for interacting with the InPost API.
+    /// InPost options containing API credentials and configuration settings necessary for authenticating and interacting with the InPost API.
     /// </summary>
-    internal sealed class InPostHttpClient : HttpClientBase
+    private readonly InPostOptions _inPostOptions;
+
+    /// <summary>
+    /// Initialize a new instance of the InPostHttpClient class with the specified dependencies.
+    /// </summary>
+    /// <param name="httpClient">The HTTP client used for making requests to the InPost API.</param>
+    /// <param name="inPostOptions">The InPost options containing API credentials and configuration settings.</param>
+    /// <param name="resilienceOptions">Optional resilience options for handling transient faults.</param>
+    /// <param name="logger">Optional logger for logging HTTP client operations.</param>
+    public InPostHttpClient(HttpClient httpClient, InPostOptions inPostOptions, HttpResilienceOptions? resilienceOptions = default, ILogger? logger = default)
+        : base(httpClient, logger, resilienceOptions)
     {
-        private readonly InPostOptions _inPostOptions;
+        _inPostOptions = inPostOptions;
 
-        public InPostHttpClient(HttpClient httpClient, InPostOptions inPostOptions, HttpResilienceOptions? resilienceOptions = default, ILogger? logger = default)
-            : base(httpClient, logger, resilienceOptions)
-        {
-            _inPostOptions = inPostOptions;
+        _httpClient.BaseAddress = new Uri(_inPostOptions.BaseUrl);
+        _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _inPostOptions.ApiKey);
+    }
 
-            _httpClient.BaseAddress = new Uri(_inPostOptions.BaseUrl);
-            _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _inPostOptions.ApiKey);
-        }
+    /// <summary>
+    /// Creates an InPost shipment and returns the normalized InPost response DTO.
+    /// </summary>
+    /// <param name="shipment">The shipment details to be created.</param>
+    /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the InPostCreateParcelResponse DTO.</returns>
+    public Task<InPostCreateParcelResponse> CreateShipmentAsync(InPostCreateParcelRequest shipment, CancellationToken cancellationToken = default)
+    {
+        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments";
+        return PostAsync(
+            endpoint,
+            shipment,
+            InPostJsonContext.Default.InPostCreateParcelRequest,
+            InPostJsonContext.Default.InPostCreateParcelResponse,
+            cancellationToken: cancellationToken);
+    }
 
-        /// <summary>
-        /// Creates an InPost shipment and returns the normalized InPost response DTO.
-        /// </summary>
-        /// <param name="shipment">The shipment details to be created.</param>
-        /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the InPostCreateParcelResponse DTO.</returns>
-        public Task<InPostCreateParcelResponse> CreateShipmentAsync(InPostCreateParcelRequest shipment, CancellationToken cancellationToken = default)
-        {
-            var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments";
-            return PostAsync(
-                endpoint,
-                shipment,
-                InPostJsonContext.Default.InPostCreateParcelRequest,
-                InPostJsonContext.Default.InPostCreateParcelResponse,
-                cancellationToken: cancellationToken);
-        }
+    /// <summary>
+    /// Gets shipment details for the specified parcel identifier.
+    /// </summary>
+    /// <param name="id">The identifier of the parcel to retrieve.</param>
+    /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the InPostGetParcelResponse DTO.</returns>
+    public Task<InPostGetParcelResponse> GetParcelAsync(string id, CancellationToken cancellationToken = default)
+    {
+        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments?id={id}";
+        return GetAsync(endpoint, InPostJsonContext.Default.InPostGetParcelResponse, cancellationToken: cancellationToken);
+    }
 
-        /// <summary>
-        /// Gets shipment details for the specified parcel identifier.
-        /// </summary>
-        /// <param name="id">The identifier of the parcel to retrieve.</param>
-        /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the InPostGetParcelResponse DTO.</returns>
-        public Task<InPostGetParcelResponse> GetParcelAsync(string id, CancellationToken cancellationToken = default)
-        {
-            var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments?id={id}";
-            return GetAsync(endpoint, InPostJsonContext.Default.InPostGetParcelResponse, cancellationToken: cancellationToken);
-        }
-
-        /// <summary>
-        /// Downloads shipment label bytes for the specified parcel identifier.
-        /// </summary>
-        /// <param name="parcelId">The identifier of the parcel for which to download the label.</param>
-        /// <param name="format">The desired format of the label (e.g., PDF, ZPL, ELP). Default is PDF.</param>
-        /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
-        /// <returns>A task that represents the asynchronous operation, containing the label bytes.</returns>
-        public Task<byte[]> GetLabelAsync(string parcelId, LabelFormat format = LabelFormat.Pdf, CancellationToken cancellationToken = default)
-        {
-            var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments/{parcelId}/label?format={format}";
-            return GetAsync(endpoint, cancellationToken: cancellationToken);
-        }
+    /// <summary>
+    /// Downloads shipment label bytes for the specified parcel identifier.
+    /// </summary>
+    /// <param name="parcelId">The identifier of the parcel for which to download the label.</param>
+    /// <param name="format">The desired format of the label (e.g., PDF, ZPL, ELP). Default is PDF.</param>
+    /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
+    /// <returns>A task that represents the asynchronous operation, containing the label bytes.</returns>
+    public Task<byte[]> GetLabelAsync(string parcelId, LabelFormat format = LabelFormat.Pdf, CancellationToken cancellationToken = default)
+    {
+        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments/{parcelId}/label?format={format}";
+        return GetAsync(endpoint, cancellationToken: cancellationToken);
     }
 }

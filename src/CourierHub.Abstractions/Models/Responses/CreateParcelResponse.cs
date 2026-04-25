@@ -34,12 +34,12 @@ public record CreateParcelResponse
     public required string CourierName { get; init; }
 
     /// <summary>
-    /// Created at timestamp for the shipment in the InPost ShipX system. This is set automatically by the InPost API when the shipment is created and indicates when the shipment record was created in the InPost system.
+    /// Created at timestamp for the shipment.
     /// </summary>
     public DateTime CreatedAt { get; init; }
 
     /// <summary>
-    /// Updated at timestamp for the shipment in the InPost ShipX system. This is set automatically by the InPost API when the shipment is updated and indicates when the shipment record was last updated in the InPost system.
+    /// Updated at timestamp for the shipment.
     /// </summary>
     public DateTime? UpdatedAt { get; init; }
 

@@ -31,16 +31,6 @@ public abstract class HttpClientBase
     ];
 
     /// <summary>
-    /// Serializer options configured for web APIs, using snake_case naming and ignoring null values. This configuration is optimized for typical REST API interactions and is used across all JSON serialization/deserialization operations in the class.
-    /// </summary>
-    private static readonly JsonSerializerOptions SerializerOptions = new(JsonSerializerDefaults.Web)
-    {
-        PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
-        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-        PropertyNameCaseInsensitive = true
-    };
-
-    /// <summary>
     /// Provides access to the HTTP client.
     /// </summary>
     protected readonly HttpClient _httpClient;
@@ -100,7 +90,11 @@ public abstract class HttpClientBase
 
             configureRequest?.Invoke(httpRequest);
 
+            _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
+
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+            _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -138,7 +132,11 @@ public abstract class HttpClientBase
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
             configureRequest?.Invoke(httpRequest);
 
+            _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
+
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+            _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -172,7 +170,11 @@ public abstract class HttpClientBase
             using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
             configureRequest?.Invoke(httpRequest);
 
+            _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
+
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+            _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
 
             if (!response.IsSuccessStatusCode)
             {

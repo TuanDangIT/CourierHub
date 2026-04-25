@@ -11,17 +11,17 @@ namespace CourierHub.InPost.Client.Models.Common;
 internal sealed class InPostParcel
 {
     /// <summary>
-    /// The physical dimensions of the parcel (length, width, height). This is optional as some courier providers allow using template-based shipments where dimensions are determined by the template.
+    /// The physical dimensions of the parcel (length, width, height). InPost allows using template-based shipments where dimensions are determined by the template.
     /// </summary>
     public InPostDimension? Dimension { get; init; }
 
     /// <summary>
-    /// The weight of the parcel. This is optional as some courier providers allow using template-based shipments where weight is determined by the template.
+    /// The weight of the parcel. This is optional as InPost allows using template-based shipments where weight is determined by the template.
     /// </summary>
     public InPostWeight? Weight { get; init; }
 
     /// <summary>
-    /// Template name or identifier for the parcel, if applicable. This is optional and may be used by some courier providers to apply predefined settings or rules to the parcel. The specific meaning and usage of this field are determined by each courier provider.
+    /// Template name or identifier for the parcel, if applicable. This is optional and may be used by InPost to apply predefined settings or rules to the parcel. The specific meaning and usage of this field are determined by InPost.
     /// </summary>
     public string? Template { get; init; }
 }
