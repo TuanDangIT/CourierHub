@@ -28,7 +28,7 @@ internal sealed class InPostPeer
     /// The phone number in any standard format (e.g., "+48123456789", "123456789").
     /// Normalization to courier-specific format is handled by individual providers.
     /// </summary>
-    public required string PhoneNumber { get; init; }
+    public required string Phone { get; init; }
 
     /// <summary>
     /// The address.

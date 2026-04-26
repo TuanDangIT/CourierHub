@@ -34,7 +34,7 @@ internal sealed class InPostAddress
     /// <summary>
     /// The postal code in Polish format (XX-XXX, e.g., "00-001", "31-011").
     /// </summary>
-    public required string PostalCode { get; init; }
+    public required string PostCode { get; init; }
 
     /// <summary>
     /// The country code using ISO 3166-1 alpha-2 format (e.g., "PL", "DE", "FR").

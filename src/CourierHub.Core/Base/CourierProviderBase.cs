@@ -1,4 +1,5 @@
-﻿using CourierHub.Abstractions.Interfaces;
+﻿using CourierHub.Abstractions.Enums;
+using CourierHub.Abstractions.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -33,9 +34,14 @@ public abstract class CourierProviderBase : ICourierProvider
     }
 
     /// <summary>
-    /// The name associated with the current instance.
+    /// Stable provider identifier (for example: "InPost", "Dpd", "MyCustomProvider").
     /// </summary>
     public abstract string Name { get; }
+
+    /// <summary>
+    /// Built-in provider enum value when applicable; otherwise null for custom providers.
+    /// </summary>
+    public virtual CourierProvider? Provider => null;
 
     /// <summary>
     /// The parcel service used to manage parcel operations.

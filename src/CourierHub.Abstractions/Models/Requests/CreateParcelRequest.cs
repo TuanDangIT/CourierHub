@@ -61,6 +61,11 @@ public record CreateParcelRequest
     public string? CostCenter { get; init; }
 
     /// <summary>
+    /// External customer identifier for the shipment, if applicable. This is optional and may not be supported by all courier providers. The specific format and meaning of this identifier are determined by each courier provider and may be used for internal tracking or customer management purposes.
+    /// </summary>
+    public string? ExternalCustomerId { get; init; }
+
+    /// <summary>
     /// Reference or note for the shipment, if applicable. The property may be used for internal tracking or identification purposes.
     /// </summary>
     public string? Reference { get; init; }

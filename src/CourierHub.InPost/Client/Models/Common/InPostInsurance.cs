@@ -12,10 +12,10 @@ internal sealed class InPostInsurance
     /// <summary>
     /// The insured amount for the parcel.
     /// </summary>
-    public required decimal Amount { get; init; }
+    public decimal? Amount { get; init; }
 
     /// <summary>
     /// Currency code for the insurance amount, following ISO 4217 standard (e.g., "USD", "EUR", "PLN"). 
     /// </summary>
-    public required string Currency { get; init; }
+    public string? Currency { get; init; }
 }

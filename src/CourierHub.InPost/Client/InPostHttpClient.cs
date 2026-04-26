@@ -59,10 +59,13 @@ internal sealed class InPostHttpClient : HttpClientBase
     /// <param name="id">The identifier of the parcel to retrieve.</param>
     /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous operation, containing the InPostGetParcelResponse DTO.</returns>
-    public Task<InPostGetParcelResponse> GetParcelAsync(string id, CancellationToken cancellationToken = default)
+    public async Task<InPostGetParcelResponse> GetParcelAsync(string id, CancellationToken cancellationToken = default)
     {
         var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments?id={id}";
-        return GetAsync(endpoint, InPostJsonContext.Default.InPostGetParcelResponse, cancellationToken: cancellationToken);
+        var response = await GetAsync(endpoint, InPostJsonContext.Default.InPostGetParcelsResponse, cancellationToken: cancellationToken);
+
+        var firstItem = response.Items.FirstOrDefault();
+        return firstItem ?? throw new InvalidOperationException($"InPost API returned no shipment items for id '{id}'.");
     }
 
     /// <summary>

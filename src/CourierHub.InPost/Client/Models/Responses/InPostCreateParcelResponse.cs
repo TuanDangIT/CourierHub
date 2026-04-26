@@ -42,9 +42,14 @@ internal sealed class InPostCreateParcelResponse
     public int ApplicationId { get; init; }
 
     /// <summary>
+    /// External customer identifier for the shipment, if provided in the request.
+    /// </summary>
+    public string? ExternalCustomerId { get; init; }
+
+    /// <summary>
     /// The ID of the user who created the shipment (if the user is logged in when the shipment was created).
     /// </summary>
-    public int CreatedById { get; init; }
+    public int? CreatedById { get; init; }
 
     /// <summary>
     /// Indicates whether the shipment has the "Paczka w Weekend" (Package on Weekend) service enabled.

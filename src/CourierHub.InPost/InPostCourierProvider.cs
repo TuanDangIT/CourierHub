@@ -1,4 +1,5 @@
-﻿using CourierHub.Abstractions.Interfaces;
+﻿using CourierHub.Abstractions.Enums;
+using CourierHub.Abstractions.Interfaces;
 using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
 using CourierHub.InPost.Client;
@@ -23,9 +24,14 @@ public sealed class InPostCourierProvider : CourierProviderBase
     private readonly IParcelService _parcelService;
 
     /// <summary>
-    /// Name of the provider.
+    /// Stable provider identifier.
     /// </summary>
     public override string Name => "InPost";
+
+    /// <summary>
+    /// Built-in provider enum value.
+    /// </summary>
+    public override CourierProvider? Provider => CourierProvider.InPost;
 
     /// <summary>
     /// Initializes a new instance of the InPostCourierProvider class with the specified dependencies.

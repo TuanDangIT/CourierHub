@@ -79,6 +79,11 @@ public record class GetParcelResponse
     public string? SendingMethod { get; init; }
 
     /// <summary>
+    /// External customer identifier for the shipment, if applicable. This is optional. 
+    /// </summary>
+    public string? ExternalCustomerId { get; init; }
+
+    /// <summary>
     /// Cost center or billing code for the shipment, if applicable. This is optional. The specific format and meaning of this code are determined by each courier provider and may be used for internal accounting or cost allocation purposes.
     /// </summary>
     public string? CostCenter { get; init; }
@@ -120,5 +125,5 @@ public record class GetParcelResponse
     /// Some courier providers may return additional information in the response
     /// that is relevant to the caller (e.g., estimated delivery date, special handling codes).
     /// </remarks>
-    public Dictionary<string, object> Metadata { get; init; } = [];
+    public Dictionary<string, object?> Metadata { get; init; } = [];
 }

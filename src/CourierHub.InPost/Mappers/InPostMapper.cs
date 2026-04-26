@@ -40,6 +40,7 @@ internal sealed class InPostMapper
                 SendingMethod = source.SendingMethod,
                 DropOffPoint = source.DropoffPointCode
             },
+            ExternalCustomerId = source.ExternalCustomerId,
             Mpk = source.CostCenter,
             Reference = source.Reference,
             IsReturn = source.IsReturn,
@@ -60,14 +61,15 @@ internal sealed class InPostMapper
             CourierName = "InPost",
             CreatedAt = source.CreatedAt,
             UpdatedAt = source.UpdatedAt,
-            Metadata = new Dictionary<string, object>
+            Metadata = new Dictionary<string, object?>
             {
                 ["InPost_Href"] = source.Href,
                 ["InPost_Status"] = source.Status,
                 ["InPost_ReturnTrackingNumber"] = source.ReturnTrackingNumber ?? string.Empty,
                 ["InPost_EndOfWeekCollection"] = source.EndOfWeekCollection,
                 ["InPost_ApplicationId"] = source.ApplicationId,
-                ["InPost_CreatedById"] = source.CreatedById,
+                ["InPost_CreatedById"] = source.CreatedById ?? null,
+                ["InPost_ExternalCustomerId"] = source.ExternalCustomerId ?? null
             }
         };
 
@@ -91,6 +93,7 @@ internal sealed class InPostMapper
             PickupPointCode = source.CustomAttributes?.TargetPoint,
             DropoffPointCode = source.CustomAttributes?.DropOffPoint,
             SendingMethod = source.CustomAttributes?.SendingMethod,
+            ExternalCustomerId = source.ExternalCustomerId,
             CostCenter = source.Mpk,
             Reference = source.Reference,
             IsReturn = source.IsReturn,
@@ -112,7 +115,7 @@ internal sealed class InPostMapper
             FirstName = source.FirstName,
             LastName = source.LastName,
             Email = source.Email,
-            PhoneNumber = source.PhoneNumber,
+            Phone = source.PhoneNumber,
             Address = MapToAddress(source.Address),
             CompanyName = source.CompanyName
         };
@@ -128,7 +131,7 @@ internal sealed class InPostMapper
             FirstName = source.FirstName,
             LastName = source.LastName,
             Email = source.Email,
-            PhoneNumber = source.PhoneNumber,
+            Phone = source.PhoneNumber,
             Address = MapToAddress(source.Address),
             CompanyName = source.CompanyName
         };
@@ -145,7 +148,7 @@ internal sealed class InPostMapper
             BuildingNumber = source.BuildingNumber,
             ApartmentNumber = source.ApartmentNumber,
             City = source.City,
-            PostalCode = source.PostalCode,
+            PostCode = source.PostalCode,
             CountryCode = source.CountryCode
         };
 
@@ -161,7 +164,7 @@ internal sealed class InPostMapper
             BuildingNumber = source.BuildingNumber,
             ApartmentNumber = source.ApartmentNumber,
             City = source.City,
-            PostalCode = source.PostalCode,
+            PostalCode = source.PostCode,
             CountryCode = source.CountryCode
         };
 
@@ -182,7 +185,7 @@ internal sealed class InPostMapper
         } 
         return new InPostParcel
         {
-            Dimension = new InPostDimension
+            Dimensions = new InPostDimension
             {
                 Length = source.Dimension!.Length,
                 Width = source.Dimension.Width,
@@ -191,7 +194,7 @@ internal sealed class InPostMapper
             },
             Weight = new InPostWeight
             {
-                Value = source.Weight!.Value,
+                Amount = source.Weight!.Amount,
                 Unit = source.Weight.Unit
             }
         };
@@ -215,14 +218,14 @@ internal sealed class InPostMapper
         {
             Dimension = new Dimension
             {
-                Length = source.Dimension!.Length,
-                Width = source.Dimension.Width,
-                Height = source.Dimension.Height,
-                Unit = source.Dimension.Unit
+                Length = source.Dimensions!.Length,
+                Width = source.Dimensions.Width,
+                Height = source.Dimensions.Height,
+                Unit = source.Dimensions.Unit
             },
             Weight = new Weight
             {
-                Value = source.Weight!.Value,
+                Amount = source.Weight!.Amount,
                 Unit = source.Weight.Unit
             }
         };
@@ -287,7 +290,7 @@ internal sealed class InPostMapper
             FirstName = source.FirstName,
             LastName = source.LastName,
             Email = source.Email,
-            PhoneNumber = source.PhoneNumber,
+            PhoneNumber = source.Phone,
             Address = MapToAddress(source.Address),
             CompanyName = source.CompanyName
         };
@@ -303,7 +306,7 @@ internal sealed class InPostMapper
             FirstName = source.FirstName,
             LastName = source.LastName,
             Email = source.Email,
-            PhoneNumber = source.PhoneNumber,
+            PhoneNumber = source.Phone,
             Address = MapToAddress(source.Address),
             CompanyName = source.CompanyName
         };

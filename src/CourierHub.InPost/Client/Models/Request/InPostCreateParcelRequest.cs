@@ -51,6 +51,11 @@ internal sealed class InPostCreateParcelRequest
     public string? Mpk { get; init; }
 
     /// <summary>
+    /// External customer identifier for the shipment, if applicable. 
+    /// </summary>
+    public string? ExternalCustomerId { get; init; }
+
+    /// <summary>
     /// Reference or note for the shipment, if applicable. The property may be used for internal tracking or identification purposes.
     /// </summary>
     public string? Reference { get; init; }

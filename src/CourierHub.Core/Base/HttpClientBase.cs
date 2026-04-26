@@ -92,7 +92,13 @@ public abstract class HttpClientBase
 
             _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
 
+            //For debugging purposes.
+            var payload = await httpRequest.Content!.ReadAsStringAsync(cancellationToken);
+
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+            //For debugging purposes.
+            var responseString = await response.Content!.ReadAsStringAsync(cancellationToken);
 
             _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
 
@@ -135,6 +141,9 @@ public abstract class HttpClientBase
             _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
 
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+            //For debugging purposes.
+            var responseString = await response.Content!.ReadAsStringAsync(cancellationToken);
 
             _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
 

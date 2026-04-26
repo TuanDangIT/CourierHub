@@ -50,5 +50,5 @@ public record CreateParcelResponse
     /// Some courier providers may return additional information in the response
     /// that is relevant to the caller (e.g., estimated delivery date, special handling codes).
     /// </remarks>
-    public Dictionary<string, object> Metadata { get; init; } = [];
+    public Dictionary<string, object?> Metadata { get; init; } = [];
 }

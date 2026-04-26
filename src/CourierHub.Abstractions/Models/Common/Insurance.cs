@@ -12,11 +12,11 @@ public record Insurance
     /// <summary>
     /// The insured amount for the parcel.
     /// </summary>
-    public required decimal Amount { get; init; }
+    public decimal? Amount { get; init; }
 
     /// <summary>
     /// Currency code for the insurance amount, following ISO 4217 standard (e.g., "USD", "EUR", "PLN"). 
     /// </summary>
     /// <remarks>Defaults to "PLN" for Polish Złoty.</remarks>
-    public required string Currency { get; init; } = "PLN";
+    public string? Currency { get; init; } = "PLN";
 }

@@ -13,7 +13,7 @@ internal sealed class InPostParcel
     /// <summary>
     /// The physical dimensions of the parcel (length, width, height). InPost allows using template-based shipments where dimensions are determined by the template.
     /// </summary>
-    public InPostDimension? Dimension { get; init; }
+    public InPostDimension? Dimensions { get; init; }
 
     /// <summary>
     /// The weight of the parcel. This is optional as InPost allows using template-based shipments where weight is determined by the template.

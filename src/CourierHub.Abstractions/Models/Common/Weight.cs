@@ -12,7 +12,7 @@ public record Weight
     /// <summary>
     /// The weight value.
     /// </summary>
-    public required decimal Value { get; init; }
+    public required decimal Amount { get; init; }
 
     /// <summary>
     /// The unit of measurement (e.g., "kg", "g", "lbs").
