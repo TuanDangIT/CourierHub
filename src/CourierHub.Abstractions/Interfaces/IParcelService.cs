@@ -19,15 +19,9 @@ namespace CourierHub.Abstractions.Interfaces
         /// <returns>A task representing the asynchronous operation, with a <see cref="CreateParcelResponse"/> result.</returns>
         Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request);
 
-        /// <summary>
-        /// Gets the details of a parcel by its unique identifier.
-        /// </summary>
-        /// <param name="parcelId">The unique identifier of the parcel. Cannot be null or empty.</param>
-        /// <returns>A task representing the asynchronous operation, with a <see cref="GetParcelResponse"/> result.</returns>
-        Task<GetParcelResponse> GetParcelAsync(string parcelId);
 
         /// <summary>
-        /// Asynchronously retrieves the shipping label for the specified parcel.
+        /// Retrieves the shipping label for the specified parcel.
         /// </summary>
         /// <param name="parcelId">The unique identifier of the parcel for which to retrieve the label. Cannot be null or empty.</param>
         /// <param name="labelFormat">The desired format of the label. Defaults to PDF if not specified.</param>

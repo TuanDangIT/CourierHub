@@ -16,7 +16,7 @@ namespace CourierHub.InPost.Client;
     GenerationMode = JsonSourceGenerationMode.Metadata)]
 [JsonSerializable(typeof(InPostCreateParcelRequest))]
 [JsonSerializable(typeof(InPostCreateParcelResponse))]
-[JsonSerializable(typeof(InPostGetParcelResponse))]
+[JsonSerializable(typeof(InPostGetParcelCreationStatusResponse))]
 [JsonSerializable(typeof(InPostGetParcelsResponse))]
 internal partial class InPostJsonContext : JsonSerializerContext
 {

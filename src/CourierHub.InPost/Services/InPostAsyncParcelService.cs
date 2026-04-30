@@ -9,13 +9,13 @@ using Microsoft.Extensions.Logging;
 
 namespace CourierHub.InPost.Services;
 
-internal sealed class InPostParcelService : IParcelService
+internal sealed class InPostAsyncParcelService : IAsyncParcelService
 {
     private readonly InPostHttpClient _httpClient;
     private readonly InPostMapper _mapper;
     private readonly ILogger? _logger;
 
-    public InPostParcelService(InPostHttpClient httpClient, InPostMapper mapper, ILogger? logger = default)
+    public InPostAsyncParcelService(InPostHttpClient httpClient, InPostMapper mapper, ILogger? logger = default)
     {
         _httpClient = httpClient;
         _mapper = mapper;
@@ -28,7 +28,7 @@ internal sealed class InPostParcelService : IParcelService
     /// </summary>
     /// <param name="request">Parcel creation request containing the details of the parcel to be created.</param>
     /// <returns>Create parcel response.</returns>
-    public Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request)
+    public Task<CreateAsyncParcelResponse> CreateParcelAsync(CreateParcelRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -42,15 +42,15 @@ internal sealed class InPostParcelService : IParcelService
     }
 
     /// <summary>
-    /// Gets InPost parcel details for the given parcel identifier.
+    /// Gets the status of a parcel creation by its unique identifier. The method retrieves the parcel information from InPost API.
     /// </summary>
     /// <param name="parcelId">The unique identifier of the parcel. Cannot be null or empty.</param>
-    /// <returns>Parcel details for the specified identifier.</returns>
-    public Task<GetParcelResponse> GetParcelAsync(string parcelId)
+    /// <returns>A task representing the asynchronous operation, with a <see cref="GetParcelCreationStatusResponse"/> result.</returns>
+    public Task<GetParcelCreationStatusResponse> GetParcelCreationStatusAsync(string parcelId)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(parcelId);
 
-        return ExecuteLoggedAsync(nameof(GetParcelAsync), async () =>
+        return ExecuteLoggedAsync(nameof(GetParcelCreationStatusAsync), async () =>
         {
             var inPostResponse = await _httpClient.GetParcelAsync(parcelId);
             return _mapper.MapToGetParcelResponse(inPostResponse);

@@ -49,6 +49,11 @@ public abstract class CourierProviderBase : ICourierProvider
     public virtual IParcelService? ParcelService => null;
 
     /// <summary>
+    /// The async parcel service used to manage parcel operations asynchronously.
+    /// </summary>
+    public virtual IAsyncParcelService? AsyncParcelService => null;
+
+    /// <summary>
     /// The locker service used to manage lockers.
     /// </summary>
     public virtual ILockerService? Lockers => null;

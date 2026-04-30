@@ -19,9 +19,9 @@ namespace CourierHub.InPost;
 public sealed class InPostCourierProvider : CourierProviderBase
 {
     /// <summary>
-    /// ParcelService implementation that provides methods for managing parcels.
+    /// AsyncParcelService implementation that provides methods for managing parcels asynchronously.
     /// </summary>
-    private readonly IParcelService _parcelService;
+    private readonly IAsyncParcelService _asyncParcelService;
 
     /// <summary>
     /// Stable provider identifier.
@@ -50,14 +50,14 @@ public sealed class InPostCourierProvider : CourierProviderBase
         ArgumentNullException.ThrowIfNull(inPostOptions);
         ArgumentNullException.ThrowIfNull(httpResilienceOptions);
 
-        _parcelService = new InPostParcelService(
+        _asyncParcelService = new InPostAsyncParcelService(
             new InPostHttpClient(httpClient, inPostOptions, httpResilienceOptions, _logger),
             new InPostMapper(),
             _logger);
     }
 
     /// <summary>
-    /// ParcelService implementation that provides methods for managing parcels.
+    /// AsyncParcelService implementation that provides methods for managing parcels asynchronously.
     /// </summary>
-    public override IParcelService? ParcelService => _parcelService;
+    public override IAsyncParcelService? AsyncParcelService => _asyncParcelService;
 }

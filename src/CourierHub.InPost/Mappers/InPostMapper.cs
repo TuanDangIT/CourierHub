@@ -53,10 +53,11 @@ internal sealed class InPostMapper
     /// </summary>
     /// <param name="source">The source InPostCreateParcelResponse object.</param>
     /// <returns>The mapped CreateParcelResponse object.</returns>
-    public CreateParcelResponse MapToCreateParcelResponse(InPostCreateParcelResponse source)
+    public CreateAsyncParcelResponse MapToCreateParcelResponse(InPostCreateParcelResponse source)
         => new()
         {
             ParcelId = source.Id.ToString(),
+            Status = source.Status,
             TrackingNumber = source.TrackingNumber ?? string.Empty,
             CourierName = "InPost",
             CreatedAt = source.CreatedAt,
@@ -64,7 +65,6 @@ internal sealed class InPostMapper
             Metadata = new Dictionary<string, object?>
             {
                 ["InPost_Href"] = source.Href,
-                ["InPost_Status"] = source.Status,
                 ["InPost_ReturnTrackingNumber"] = source.ReturnTrackingNumber ?? string.Empty,
                 ["InPost_EndOfWeekCollection"] = source.EndOfWeekCollection,
                 ["InPost_ApplicationId"] = source.ApplicationId,
@@ -78,29 +78,11 @@ internal sealed class InPostMapper
     /// </summary>
     /// <param name="source">The source InPostGetParcelResponse containing parcel data to be mapped.</param>
     /// <returns>A GetParcelResponse object populated with data from the specified source.</returns>
-    public GetParcelResponse MapToGetParcelResponse(InPostGetParcelResponse source)
+    public GetParcelCreationStatusResponse MapToGetParcelResponse(InPostGetParcelCreationStatusResponse source)
         => new()
         {
             ParcelId = source.Id.ToString(),
-            TrackingNumber = source.TrackingNumber ?? string.Empty,
-            CourierName = "InPost",
-            Sender = MapToSender(source.Sender),
-            Receiver = MapToReceiver(source.Receiver),
-            Parcels = [.. source.Parcels.Select(MapToParcel)],
-            Insurance = source.Insurance is not null ? MapToInsurance(source.Insurance) : null,
-            CashOnDelivery = source.Cod is not null ? MapToCashOnDelivery(source.Cod) : null,
-            ServiceCode = source.Service,
-            PickupPointCode = source.CustomAttributes?.TargetPoint,
-            DropoffPointCode = source.CustomAttributes?.DropOffPoint,
-            SendingMethod = source.CustomAttributes?.SendingMethod,
-            ExternalCustomerId = source.ExternalCustomerId,
-            CostCenter = source.Mpk,
-            Reference = source.Reference,
-            IsReturn = source.IsReturn,
-            Comments = source.Comments,
-            AdditionalServices = source.AdditionalServices,
-            CreatedAt = source.CreatedAt,
-            UpdatedAt = source.UpdatedAt,
+            Status = source.Status
         };
 
 
@@ -153,22 +135,6 @@ internal sealed class InPostMapper
         };
 
     /// <summary>
-    /// Maps an InPost Address to an abstraction Address format.
-    /// </summary>
-    /// <param name="source">The source InPostAddress object.</param>
-    /// <returns>The mapped Address object.</returns>
-    private static Address MapToAddress(InPostAddress source)
-        => new()
-        {
-            Street = source.Street,
-            BuildingNumber = source.BuildingNumber,
-            ApartmentNumber = source.ApartmentNumber,
-            City = source.City,
-            PostalCode = source.PostCode,
-            CountryCode = source.CountryCode
-        };
-
-    /// <summary>
     /// Maps an abstraction Parcel to InPost Parcel format.
     /// </summary>
     /// <param name="source">The source Parcel object.</param>
@@ -201,54 +167,11 @@ internal sealed class InPostMapper
     }
 
     /// <summary>
-    /// Maps an InPost Parcel to an abstraction Parcel format.
-    /// </summary>
-    /// <param name="source">The source InPostParcel object.</param>
-    /// <returns>The mapped Parcel object.</returns>
-    private static Parcel MapToParcel(InPostParcel source)
-    {
-        if (source.Template is not null)
-        {
-            return new Parcel
-            {
-                Template = source.Template
-            };
-        }
-        return new Parcel
-        {
-            Dimension = new Dimension
-            {
-                Length = source.Dimensions!.Length,
-                Width = source.Dimensions.Width,
-                Height = source.Dimensions.Height,
-                Unit = source.Dimensions.Unit
-            },
-            Weight = new Weight
-            {
-                Amount = source.Weight!.Amount,
-                Unit = source.Weight.Unit
-            }
-        };
-    }
-
-    /// <summary>
     /// Maps an abstraction Insurance to InPost Insurance format.
     /// </summary>
     /// <param name="source">The source Insurance object.</param>
     /// <returns>The mapped InPostInsurance object.</returns>
     private static InPostInsurance MapToInsurance(Insurance source)
-        => new()
-        {
-            Amount = source.Amount,
-            Currency = source.Currency
-        };
-
-    /// <summary>
-    /// Maps an InPost Insurance to an abstraction Insurance format.
-    /// </summary>
-    /// <param name="source">The source InPostInsurance object.</param>
-    /// <returns>The mapped Insurance object.</returns>
-    private static Insurance MapToInsurance(InPostInsurance source)
         => new()
         {
             Amount = source.Amount,
@@ -265,50 +188,6 @@ internal sealed class InPostMapper
         {
             Amount = source.Amount,
             Currency = source.Currency
-        };
-
-    /// <summary>
-    /// Maps an InPost CashOnDelivery to an abstraction CashOnDelivery format.
-    /// </summary>
-    /// <param name="source">The source InPostCashOnDelivery object.</param>
-    /// <returns>The mapped CashOnDelivery object.</returns>
-    private static CashOnDelivery MapToCashOnDelivery(InPostCashOnDelivery source)
-        => new()
-        {
-            Amount = source.Amount,
-            Currency = source.Currency
-        };
-
-    /// <summary>
-    /// Maps an InPostPeer object to a Receiver object.
-    /// </summary>
-    /// <param name="source">The source InPostPeer object.</param>
-    /// <returns>The mapped Receiver object.</returns>
-    private static Receiver MapToReceiver(InPostPeer source)
-        => new()
-        {
-            FirstName = source.FirstName,
-            LastName = source.LastName,
-            Email = source.Email,
-            PhoneNumber = source.Phone,
-            Address = MapToAddress(source.Address),
-            CompanyName = source.CompanyName
-        };
-
-    /// <summary>
-    /// Maps an InPostPeer object to a Sender object.
-    /// </summary>
-    /// <param name="source">The source InPostPeer object.</param>
-    /// <returns>The mapped Sender object.</returns>
-    private static Sender MapToSender(InPostPeer source)
-        => new()
-        {
-            FirstName = source.FirstName,
-            LastName = source.LastName,
-            Email = source.Email,
-            PhoneNumber = source.Phone,
-            Address = MapToAddress(source.Address),
-            CompanyName = source.CompanyName
         };
 
     /// <summary>

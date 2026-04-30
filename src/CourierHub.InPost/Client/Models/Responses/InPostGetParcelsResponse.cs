@@ -28,5 +28,5 @@ internal sealed class InPostGetParcelsResponse
     /// <summary>
     /// List of returned shipment items.
     /// </summary>
-    public required IReadOnlyList<InPostGetParcelResponse> Items { get; init; }
+    public required IReadOnlyList<InPostGetParcelCreationStatusResponse> Items { get; init; }
 }
