@@ -81,11 +81,6 @@ public record CreateParcelRequest
     public string? Comments { get; init; }
 
     /// <summary>
-    /// Additional services for the shipment ex. "email" or "sms", if applicable. This is optional.
-    /// </summary>
-    public IEnumerable<string>? AdditionalServices { get; init; }
-
-    /// <summary>
     /// Courier-specific metadata and optional parameters.
     /// </summary>
     /// <remarks>

@@ -45,7 +45,7 @@ internal sealed class InPostMapper
             Reference = source.Reference,
             IsReturn = source.IsReturn,
             Comments = source.Comments,
-            AdditionalServices = source.AdditionalServices
+            AdditionalServices = source.Metadata["InPost_AdditionalServices"] as IEnumerable<string> ?? null
         };
 
     /// <summary>
@@ -189,12 +189,4 @@ internal sealed class InPostMapper
             Amount = source.Amount,
             Currency = source.Currency
         };
-
-    /// <summary>
-    /// Extracts a string value from the request metadata dictionary.
-    /// </summary>
-    private static string? ExtractMetadataString(CreateParcelRequest request, string key)
-    {
-        return request.Metadata.TryGetValue(key, out var value) ? value?.ToString() : null;
-    }
 }
