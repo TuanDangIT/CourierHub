@@ -27,7 +27,14 @@ namespace CourierHub.Abstractions.Interfaces
         /// <summary>
         /// The parcel service used to manage parcel operations.
         /// </summary>
+        /// <remarks>Used in [DPD]</remarks>
         IParcelService? ParcelService { get; }
+
+        /// <summary>
+        /// The async parcel service used to manage parcel operations asynchronously.
+        /// </summary>
+        /// <remarks>Used in [InPost]</remarks>
+        IAsyncParcelService? AsyncParcelService { get; }
 
         /// <summary>
         /// The locker service used to manage lockers.
