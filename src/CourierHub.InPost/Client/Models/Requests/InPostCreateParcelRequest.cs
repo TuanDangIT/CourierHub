@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace CourierHub.InPost.Client.Models.Request;
+namespace CourierHub.InPost.Client.Models.Requests;
 
 /// <summary>
 /// InPost specific request model for creating a new parcel. This class encapsulates all the necessary information required by InPost to process a parcel creation request, including sender and receiver details, parcel information, service code, and additional attributes specific to InPost's requirements.

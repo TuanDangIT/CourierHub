@@ -1,4 +1,4 @@
-using CourierHub.InPost.Client.Models.Request;
+using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
 using System.Text.Json;
 using System.Text.Json.Serialization;

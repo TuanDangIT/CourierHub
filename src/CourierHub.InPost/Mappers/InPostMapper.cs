@@ -2,7 +2,7 @@
 using CourierHub.Abstractions.Models.Requests;
 using CourierHub.Abstractions.Models.Responses;
 using CourierHub.InPost.Client.Models.Common;
-using CourierHub.InPost.Client.Models.Request;
+using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
 using System;
 using System.Collections.Generic;

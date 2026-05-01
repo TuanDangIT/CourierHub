@@ -1,7 +1,7 @@
 ﻿using CourierHub.Abstractions.Enums;
 using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
-using CourierHub.InPost.Client.Models.Request;
+using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
 using CourierHub.InPost.Configuration;
 using Microsoft.Extensions.Logging;
