@@ -3,7 +3,7 @@ using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
-using CourierHub.InPost.Configuration;
+using CourierHub.InPost.Configurations;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
 using System.Text.Json;

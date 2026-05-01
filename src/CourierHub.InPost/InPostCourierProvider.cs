@@ -3,7 +3,7 @@ using CourierHub.Abstractions.Interfaces;
 using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
 using CourierHub.InPost.Client;
-using CourierHub.InPost.Configuration;
+using CourierHub.InPost.Configurations;
 using CourierHub.InPost.Mappers;
 using CourierHub.InPost.Services;
 using Microsoft.Extensions.Logging;
@@ -19,11 +19,6 @@ namespace CourierHub.InPost;
 public sealed class InPostCourierProvider : CourierProviderBase
 {
     /// <summary>
-    /// AsyncParcelService implementation that provides methods for managing parcels asynchronously.
-    /// </summary>
-    private readonly IAsyncParcelService _asyncParcelService;
-
-    /// <summary>
     /// Stable provider identifier.
     /// </summary>
     public override string Name => "InPost";
@@ -32,6 +27,16 @@ public sealed class InPostCourierProvider : CourierProviderBase
     /// Built-in provider enum value.
     /// </summary>
     public override CourierProvider? Provider => CourierProvider.InPost;
+
+    /// <summary>
+    /// AsyncParcelService implementation that provides methods for managing parcels asynchronously.
+    /// </summary>
+    public override IAsyncParcelService? AsyncParcelService => _asyncParcelService;
+
+    /// <summary>
+    /// AsyncParcelService implementation that provides methods for managing parcels asynchronously.
+    /// </summary>
+    private readonly IAsyncParcelService _asyncParcelService;
 
     /// <summary>
     /// Initializes a new instance of the InPostCourierProvider class with the specified dependencies.
@@ -55,9 +60,4 @@ public sealed class InPostCourierProvider : CourierProviderBase
             new InPostMapper(),
             _logger);
     }
-
-    /// <summary>
-    /// AsyncParcelService implementation that provides methods for managing parcels asynchronously.
-    /// </summary>
-    public override IAsyncParcelService? AsyncParcelService => _asyncParcelService;
 }

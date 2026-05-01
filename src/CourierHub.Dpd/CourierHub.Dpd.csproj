@@ -5,4 +5,10 @@
     <ProjectReference Include="..\CourierHub.Core\CourierHub.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Client\Models\" />
+    <Folder Include="Client\Requests\" />
+    <Folder Include="Client\Responses\" />
+  </ItemGroup>
+
 </Project>

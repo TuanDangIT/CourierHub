@@ -1,7 +1,7 @@
 using CourierHub.Abstractions.Interfaces;
 using CourierHub.Core.Configuration;
 using CourierHub.Extensions.DependencyInjection;
-using CourierHub.InPost.Configuration;
+using CourierHub.InPost.Configurations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 

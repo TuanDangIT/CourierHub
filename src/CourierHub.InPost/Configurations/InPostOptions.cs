@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using CourierHub.Core.Configuration;
 
-namespace CourierHub.InPost.Configuration;
+namespace CourierHub.InPost.Configurations;
 
 /// <summary>
 /// Configuration options for InPost API integration.
