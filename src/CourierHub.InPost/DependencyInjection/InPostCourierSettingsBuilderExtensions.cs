@@ -48,7 +48,6 @@ public static class InPostCourierSettingsBuilderExtensions
         resilienceSetupAction?.Invoke(resilienceOptions);
 
         builder.Services.AddSingleton(inPostOptions);
-        builder.Services.AddSingleton(resilienceOptions);
 
         builder.Services.AddHttpClient("CourierHub.InPost");
 
@@ -56,7 +55,7 @@ public static class InPostCourierSettingsBuilderExtensions
             new InPostCourierProvider(
                 sp.GetRequiredService<IHttpClientFactory>().CreateClient("CourierHub.InPost"),
                 sp.GetRequiredService<InPostOptions>(),
-                sp.GetRequiredService<HttpResilienceOptions>(),
+                resilienceOptions,
                 sp.GetService<ILogger<InPostCourierProvider>>()));
 
         return builder;

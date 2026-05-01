@@ -3,6 +3,7 @@ using CourierHub.Abstractions.Interfaces;
 using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
 using CourierHub.Dpd.Configurations;
+using CourierHub.Dpd.Services;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,11 @@ namespace CourierHub.Dpd
 {
     internal class DpdCourierProvider : CourierProviderBase
     {
+        /// <summary>
+        /// ParcelService implementation that provides methods for managing parcels.
+        /// </summary>
+        private readonly IParcelService _parcelService;
+
         /// <summary>
         /// Stable provider identifier.
         /// </summary>
@@ -39,7 +45,12 @@ namespace CourierHub.Dpd
             ArgumentNullException.ThrowIfNull(dpdOptions);
             ArgumentNullException.ThrowIfNull(httpResilienceOptions);
 
-
+            _parcelService = new DpdParcelService();
         }
+
+        /// <summary>
+        /// ParcelService implementation that provides methods for managing parcels.
+        /// </summary>
+        public override IParcelService? ParcelService => _parcelService;
     }
 }
