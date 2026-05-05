@@ -26,29 +26,13 @@ public record CreateParcelResponse
     /// This number can be used for tracking the parcel's delivery status and is
     /// typically displayed on shipping labels and communicated to customers.
     /// </remarks>
-    public required string TrackingNumber { get; init; }
-
-    /// <summary>
-    /// The name of the courier provider that processed this request.
-    /// </summary>
-    public required string CourierName { get; init; }
-
-    /// <summary>
-    /// Created at timestamp for the shipment.
-    /// </summary>
-    public DateTime CreatedAt { get; init; }
-
-    /// <summary>
-    /// Updated at timestamp for the shipment.
-    /// </summary>
-    public DateTime? UpdatedAt { get; init; }
+    public required IEnumerable<string> TrackingNumbers { get; init; }
 
     /// <summary>
     /// Additional metadata returned by the courier provider.
     /// </summary>
     /// <remarks>
-    /// Some courier providers may return additional information in the response
-    /// that is relevant to the caller (e.g., estimated delivery date, special handling codes).
+    /// Some courier providers may return additional information in the response.
     /// </remarks>
     public Dictionary<string, object?> Metadata { get; init; } = [];
 }

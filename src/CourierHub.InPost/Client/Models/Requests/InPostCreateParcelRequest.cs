@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace CourierHub.InPost.Client.Models.Requests;
 
@@ -23,7 +24,7 @@ internal sealed class InPostCreateParcelRequest
     /// <summary>
     /// The list of parcels to be shipped. Each parcel includes its dimensions and weight. A shipment can consist of one or more parcels.
     /// </summary>
-    public required IEnumerable<InPostParcel> Parcels { get; init; }
+    public required IEnumerable<InPostCreateParcelRequestParcel> Parcels { get; init; }
 
     /// <summary>
     /// Insurance details for the parcel, if applicable. 
@@ -74,4 +75,31 @@ internal sealed class InPostCreateParcelRequest
     /// Additional services for the shipment ex. "email" or "sms", if applicable. This is optional.
     /// </summary>
     public IEnumerable<string>? AdditionalServices { get; init; }
+
+
+    /// <summary>
+    /// TODO: Decide whether to include this property in the request model.
+    /// </summary>
+    //public bool? OnlyChoiceOfOffer { get; init; }
+}
+
+/// <summary>
+/// Represents the physical characteristics of a parcel specific to InPost.
+/// </summary>
+internal sealed class InPostCreateParcelRequestParcel
+{
+    /// <summary>
+    /// The physical dimensions of the parcel (length, width, height). InPost allows using template-based shipments where dimensions are determined by the template.
+    /// </summary>
+    public InPostDimension? Dimensions { get; init; }
+
+    /// <summary>
+    /// The weight of the parcel. This is optional as InPost allows using template-based shipments where weight is determined by the template.
+    /// </summary>
+    public InPostWeight? Weight { get; init; }
+
+    /// <summary>
+    /// Template name or identifier for the parcel, if applicable. This is optional and may be used by InPost to apply predefined settings or rules to the parcel. The specific meaning and usage of this field are determined by InPost.
+    /// </summary>
+    public string? Template { get; init; }
 }

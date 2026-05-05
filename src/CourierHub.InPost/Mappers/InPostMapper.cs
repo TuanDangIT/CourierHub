@@ -1,6 +1,8 @@
-﻿using CourierHub.Abstractions.Models.Common;
+﻿using CourierHub.Abstractions.Enums;
+using CourierHub.Abstractions.Models.Common;
 using CourierHub.Abstractions.Models.Requests;
 using CourierHub.Abstractions.Models.Responses;
+using CourierHub.Core.UnitConverters;
 using CourierHub.InPost.Client.Models.Common;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
@@ -58,18 +60,33 @@ internal sealed class InPostMapper
         {
             ParcelId = source.Id.ToString(),
             Status = source.Status,
-            TrackingNumber = source.TrackingNumber ?? string.Empty,
-            CourierName = "InPost",
-            CreatedAt = source.CreatedAt,
-            UpdatedAt = source.UpdatedAt,
+            TrackingNumbers = source.Parcels.Select(p => p.TrackingNumber),
             Metadata = new Dictionary<string, object?>
             {
                 ["InPost_Href"] = source.Href,
-                ["InPost_ReturnTrackingNumber"] = source.ReturnTrackingNumber ?? string.Empty,
+                ["InPost_TrackingNumber"] = source.TrackingNumber,
+                ["InPost_Service"] = source.Service,
+                ["InPost_Reference"] = source.Reference,
+                ["InPost_IsReturn"] = source.IsReturn,
                 ["InPost_EndOfWeekCollection"] = source.EndOfWeekCollection,
                 ["InPost_ApplicationId"] = source.ApplicationId,
-                ["InPost_CreatedById"] = source.CreatedById ?? null,
-                ["InPost_ExternalCustomerId"] = source.ExternalCustomerId ?? null
+                ["InPost_CreatedById"] = source.CreatedById,
+                ["InPost_ExternalCustomerId"] = source.ExternalCustomerId,
+                ["InPost_SendingMethod"] = source.SendingMethod,
+                ["InPost_Comments"] = source.Comments,
+                ["InPost_Mpk"] = source.Mpk,
+                ["InPost_AdditionalServices"] = source.AdditionalServices,
+                ["InPost_CustomAttributes"] = source.CustomAttributes,
+                ["InPost_Cod"] = source.Cod,
+                ["InPost_Sender"] = source.Sender,
+                ["InPost_Receiver"] = source.Receiver,
+                ["InPost_SelectedOffer"] = source.SelectedOffer,
+                ["InPost_Offers"] = source.Offers,
+                ["InPost_Transactions"] = source.Transactions,
+                ["InPost_Parcels"] = source.Parcels,
+                ["InPost_Insurance"] = source.Insurance,
+                ["InPost_CreatedAt"] = source.CreatedAt,
+                ["InPost_UpdatedAt"] = source.UpdatedAt
             }
         };
 
@@ -82,7 +99,8 @@ internal sealed class InPostMapper
         => new()
         {
             ParcelId = source.Id.ToString(),
-            Status = source.Status
+            Status = source.Status,
+            TrackingNumbers = source.Parcels.Select(p => p.TrackingNumber),
         };
 
 
@@ -122,7 +140,7 @@ internal sealed class InPostMapper
     /// Maps an abstraction Address to InPost Address format.
     /// </summary>
     /// <param name="source">The source Address object.</param>
-    /// <returns>The mapped InPostAddress object.</returns>
+    /// <returns>The mapped InPostCreateParcelAddress object.</returns>
     private static InPostAddress MapToAddress(Address source)
         => new()
         {
@@ -138,30 +156,30 @@ internal sealed class InPostMapper
     /// Maps an abstraction Parcel to InPost Parcel format.
     /// </summary>
     /// <param name="source">The source Parcel object.</param>
-    /// <returns>The mapped InPostParcel object.</returns>
-    private static InPostParcel MapToParcel(Parcel source)
+    /// <returns>The mapped InPostCreateParcelParcel object.</returns>
+    private static InPostCreateParcelRequestParcel MapToParcel(Parcel source)
     {
         if (source.Template is not null)
         {
-            return new InPostParcel
+            return new InPostCreateParcelRequestParcel
             {
                 Template = source.Template
 
             };
         } 
-        return new InPostParcel
+        return new InPostCreateParcelRequestParcel
         {
             Dimensions = new InPostDimension
             {
-                Length = source.Dimension!.Length,
-                Width = source.Dimension.Width,
-                Height = source.Dimension.Height,
-                Unit = source.Dimension.Unit
+                Length = LengthConverter.Convert(source.Dimension!.Length, source.Dimension.Unit, LengthUnit.Mm),
+                Width = LengthConverter.Convert(source.Dimension.Width, source.Dimension.Unit, LengthUnit.Mm),
+                Height = LengthConverter.Convert(source.Dimension.Height, source.Dimension.Unit, LengthUnit.Mm),
+                Unit = "mm"
             },
             Weight = new InPostWeight
             {
-                Amount = source.Weight!.Amount,
-                Unit = source.Weight.Unit
+                Amount = WeightConverter.Convert(source.Weight!.Amount, source.Weight.Unit, WeightUnit.Kg),
+                Unit = "kg"
             }
         };
     }
@@ -170,7 +188,7 @@ internal sealed class InPostMapper
     /// Maps an abstraction Insurance to InPost Insurance format.
     /// </summary>
     /// <param name="source">The source Insurance object.</param>
-    /// <returns>The mapped InPostInsurance object.</returns>
+    /// <returns>The mapped InPostCreateParcelInsurance object.</returns>
     private static InPostInsurance MapToInsurance(Insurance source)
         => new()
         {
@@ -182,7 +200,7 @@ internal sealed class InPostMapper
     /// Maps an abstraction CashOnDelivery to InPost CashOnDelivery format.
     /// </summary>
     /// <param name="source">The source CashOnDelivery object.</param>
-    /// <returns>The mapped InPostCashOnDelivery object.</returns>
+    /// <returns>The mapped InPostCreateParcelCashOnDelivery object.</returns>
     private static InPostCashOnDelivery MapToCashOnDelivery(CashOnDelivery source)
         => new()
         {

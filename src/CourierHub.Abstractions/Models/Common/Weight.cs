@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using CourierHub.Abstractions.Enums;
 
 namespace CourierHub.Abstractions.Models.Common;
 
@@ -15,8 +16,8 @@ public record Weight
     public required decimal Amount { get; init; }
 
     /// <summary>
-    /// The unit of measurement (e.g., "kg", "g", "lbs").
+    /// The unit of measurement.
     /// </summary>
-    /// <remarks>Defaults to "kg" (kilograms).</remarks>
-    public string Unit { get; init; } = "kg";
+    /// <remarks>Defaults to Kilogram (Kg).</remarks>
+    public WeightUnit Unit { get; init; } = WeightUnit.Kg;
 }

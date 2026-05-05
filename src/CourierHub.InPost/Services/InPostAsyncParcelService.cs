@@ -52,7 +52,7 @@ internal sealed class InPostAsyncParcelService : IAsyncParcelService
 
         return ExecuteLoggedAsync(nameof(GetParcelCreationStatusAsync), async () =>
         {
-            var inPostResponse = await _httpClient.GetParcelAsync(parcelId);
+            var inPostResponse = await _httpClient.GetParcelCreationStatusAsync(parcelId);
             return _mapper.MapToGetParcelResponse(inPostResponse);
         });
     }

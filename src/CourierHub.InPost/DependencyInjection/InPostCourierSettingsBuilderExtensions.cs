@@ -22,7 +22,7 @@ public static class InPostCourierSettingsBuilderExtensions
     public static CourierSettingsBuilder AddInPost(
         this CourierSettingsBuilder builder,
         Action<InPostOptions> setupAction,
-        Action<HttpResilienceOptions>? resilienceSetupAction = null)
+        Action<HttpResilienceOptions>? resilienceSetupAction = default)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(setupAction);

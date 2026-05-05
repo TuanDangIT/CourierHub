@@ -1,4 +1,5 @@
 ﻿using System;
+using CourierHub.Abstractions.Enums;
 
 namespace CourierHub.Abstractions.Models.Common;
 
@@ -23,10 +24,10 @@ public record Dimension
     public required decimal Height { get; init; }
 
     /// <summary>
-    /// The unit of measurement (e.g., "mm", "cm", "m").
-    /// Defaults to "mm" (millimeters).
+    /// The unit of measurement.
+    /// Defaults to Millimeter (Mm).
     /// </summary>
-    public string Unit { get; init; } = "mm";
+    public LengthUnit Unit { get; init; } = LengthUnit.Mm;
 
     /// <summary>
     /// The flag indicating whether the dimensions are non-standard (e.g., irregular shape, oversized). This is optional and may not be supported by all courier providers.
