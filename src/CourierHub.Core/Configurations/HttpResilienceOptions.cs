@@ -31,4 +31,9 @@ public sealed class HttpResilienceOptions
     /// Adds random jitter to retry delays.
     /// </summary>
     public bool UseJitter { get; set; } = true;
+
+    /// <summary>
+    /// HTTP request timeout. Applied to each individual request attempt.
+    /// </summary>
+    public TimeSpan RequestTimeout { get; set; } = TimeSpan.FromSeconds(30);
 }

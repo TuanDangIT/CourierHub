@@ -34,5 +34,5 @@ public record CreateParcelResponse
     /// <remarks>
     /// Some courier providers may return additional information in the response.
     /// </remarks>
-    public Dictionary<string, object?> Metadata { get; init; } = [];
+    public Dictionary<string, string?> Metadata { get; init; } = [];
 }

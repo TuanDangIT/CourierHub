@@ -22,21 +22,24 @@ public static class DpdCourierSettingsBuilderExtensions
     public static CourierSettingsBuilder AddDpd(
         this CourierSettingsBuilder builder,
         Action<DpdOptions> setupAction,
-        Action<HttpResilienceOptions>? resilienceSetupAction = null)
+        Action<HttpResilienceOptions>? resilienceSetupAction = default)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(setupAction);
 
         var dpdOptions = new DpdOptions
         {
-            ApiKey = string.Empty,
-            OrganizationFID = string.Empty
+            BaseUrl = string.Empty,
+            Login = string.Empty,
+            Password = string.Empty,
+            MasterFID = string.Empty
         };
         setupAction(dpdOptions);
 
-        ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.ApiKey);
         ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.BaseUrl);
-        ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.OrganizationFID);
+        ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.Login);
+        ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.Password);
+        ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.MasterFID);
 
         var resilienceOptions = new HttpResilienceOptions();
         resilienceSetupAction?.Invoke(resilienceOptions);

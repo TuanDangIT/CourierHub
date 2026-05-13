@@ -10,7 +10,7 @@ namespace CourierHub.Dpd.Client;
 /// </summary>
 [JsonSourceGenerationOptions(
     JsonSerializerDefaults.Web,
-    PropertyNamingPolicy = JsonKnownNamingPolicy.SnakeCaseLower,
+    PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     PropertyNameCaseInsensitive = true,
     GenerationMode = JsonSourceGenerationMode.Metadata)]

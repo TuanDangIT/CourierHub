@@ -4,12 +4,9 @@ using CourierHub.Abstractions.Models.Requests;
 using CourierHub.Abstractions.Models.Responses;
 using CourierHub.Core.UnitConverters;
 using CourierHub.InPost.Client.Models.Common;
+using CourierHub.InPost.Client.Models.Extensions;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CourierHub.InPost.Mappers;
 
@@ -27,7 +24,7 @@ internal sealed class InPostMapper
     /// </summary>
     /// <param name="source">The source CreateParcelRequest object.</param>
     /// <returns>The mapped InPostCreateParcelRequest object.</returns>
-    public InPostCreateParcelRequest MapToCreateParcelRequest(CreateParcelRequest source)
+    public InPostCreateAsyncParcelRequest MapToCreateParcelRequest(CreateParcelRequest source)
         => new()
         {
             Sender = MapToPeer(source.Sender),
@@ -55,38 +52,38 @@ internal sealed class InPostMapper
     /// </summary>
     /// <param name="source">The source InPostCreateParcelResponse object.</param>
     /// <returns>The mapped CreateParcelResponse object.</returns>
-    public CreateAsyncParcelResponse MapToCreateParcelResponse(InPostCreateParcelResponse source)
+    public CreateAsyncParcelResponse<InPostCreateAsyncParcelResponseExtension> MapToCreateParcelResponse(InPostCreateAsyncParcelResponse source)
         => new()
         {
             ParcelId = source.Id.ToString(),
             Status = source.Status,
             TrackingNumbers = source.Parcels.Select(p => p.TrackingNumber),
-            Metadata = new Dictionary<string, object?>
+            Extension = new InPostCreateAsyncParcelResponseExtension
             {
-                ["InPost_Href"] = source.Href,
-                ["InPost_TrackingNumber"] = source.TrackingNumber,
-                ["InPost_Service"] = source.Service,
-                ["InPost_Reference"] = source.Reference,
-                ["InPost_IsReturn"] = source.IsReturn,
-                ["InPost_EndOfWeekCollection"] = source.EndOfWeekCollection,
-                ["InPost_ApplicationId"] = source.ApplicationId,
-                ["InPost_CreatedById"] = source.CreatedById,
-                ["InPost_ExternalCustomerId"] = source.ExternalCustomerId,
-                ["InPost_SendingMethod"] = source.SendingMethod,
-                ["InPost_Comments"] = source.Comments,
-                ["InPost_Mpk"] = source.Mpk,
-                ["InPost_AdditionalServices"] = source.AdditionalServices,
-                ["InPost_CustomAttributes"] = source.CustomAttributes,
-                ["InPost_Cod"] = source.Cod,
-                ["InPost_Sender"] = source.Sender,
-                ["InPost_Receiver"] = source.Receiver,
-                ["InPost_SelectedOffer"] = source.SelectedOffer,
-                ["InPost_Offers"] = source.Offers,
-                ["InPost_Transactions"] = source.Transactions,
-                ["InPost_Parcels"] = source.Parcels,
-                ["InPost_Insurance"] = source.Insurance,
-                ["InPost_CreatedAt"] = source.CreatedAt,
-                ["InPost_UpdatedAt"] = source.UpdatedAt
+                Href = source.Href,
+                TrackingNumber = source.TrackingNumber,
+                Service = source.Service,
+                Reference = source.Reference,
+                IsReturn = source.IsReturn,
+                EndOfWeekCollection = source.EndOfWeekCollection,
+                ApplicationId = source.ApplicationId,
+                CreatedById = source.CreatedById,
+                ExternalCustomerId = source.ExternalCustomerId,
+                SendingMethod = source.SendingMethod,
+                Comments = source.Comments,
+                Mpk = source.Mpk,
+                AdditionalServices = source.AdditionalServices,
+                CustomAttributes = MapToCustomAttributesExtension(source.CustomAttributes),
+                Cod = MapToCodExtension(source.Cod),
+                Sender = MapToSenderExtension(source.Sender),
+                Receiver = MapToReceiverExtension(source.Receiver),
+                SelectedOffer = source.SelectedOffer is not null ? MapToOfferExtension(source.SelectedOffer) : null,
+                Offers = source.Offers.Any() ? source.Offers.Select(MapToOfferExtension) : null,
+                Transactions = source.Transactions.Any() ? source.Transactions.Select(MapToTransactionExtension) : null,
+                Parcels = source.Parcels.Any() ? source.Parcels.Select(MapToParcelExtension) : null,
+                Insurance = MapToInsuranceExtension(source.Insurance),
+                CreatedAt = source.CreatedAt,
+                UpdatedAt = source.UpdatedAt
             }
         };
 
@@ -102,7 +99,6 @@ internal sealed class InPostMapper
             Status = source.Status,
             TrackingNumbers = source.Parcels.Select(p => p.TrackingNumber),
         };
-
 
     /// <summary>
     /// Maps an abstraction Sender/Receiver to InPost Peer format.
@@ -206,5 +202,172 @@ internal sealed class InPostMapper
         {
             Amount = source.Amount,
             Currency = source.Currency
+        };
+
+    /// <summary>
+    /// Maps InPost custom attributes to async parcel response extension custom attributes.
+    /// </summary>
+    /// <param name="source">The source InPost custom attributes.</param>
+    /// <returns>The mapped extension custom attributes, or null when source is null.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionCustomAttributes? MapToCustomAttributesExtension(InPostCustomAttributes? source)
+        => source is null
+            ? null
+            : new InPostCreateAsyncParcelResponseExtensionCustomAttributes
+            {
+                TargetPoint = source.TargetPoint,
+                SendingMethod = source.SendingMethod,
+                DropOffPoint = source.DropOffPoint
+            };
+
+    /// <summary>
+    /// Maps InPost cash-on-delivery details to async parcel response extension COD details.
+    /// </summary>
+    /// <param name="source">The source InPost cash-on-delivery details.</param>
+    /// <returns>The mapped extension COD details, or null when source is null.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionCod? MapToCodExtension(InPostCashOnDelivery? source)
+        => source is null
+            ? null
+            : new InPostCreateAsyncParcelResponseExtensionCod
+            {
+                Amount = source.Amount,
+                Currency = source.Currency
+            };
+
+    /// <summary>
+    /// Maps InPost insurance details to async parcel response extension insurance details.
+    /// </summary>
+    /// <param name="source">The source InPost insurance details.</param>
+    /// <returns>The mapped extension insurance details, or null when source is null.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionInsurance? MapToInsuranceExtension(InPostInsurance? source)
+        => source is null
+            ? null
+            : new InPostCreateAsyncParcelResponseExtensionInsurance
+            {
+                Amount = source.Amount,
+                Currency = source.Currency
+            };
+
+    /// <summary>
+    /// Maps InPost peer sender details to async parcel response extension sender details.
+    /// </summary>
+    /// <param name="source">The source InPost peer.</param>
+    /// <returns>The mapped extension sender details.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionSender MapToSenderExtension(InPostPeer source)
+        => new()
+        {
+            FirstName = source.FirstName,
+            LastName = source.LastName,
+            Email = source.Email,
+            Phone = source.Phone,
+            Address = MapToAddressExtension(source.Address),
+            CompanyName = source.CompanyName
+        };
+
+    /// <summary>
+    /// Maps InPost peer receiver details to async parcel response extension receiver details.
+    /// </summary>
+    /// <param name="source">The source InPost peer.</param>
+    /// <returns>The mapped extension receiver details.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionReceiver MapToReceiverExtension(InPostPeer source)
+        => new()
+        {
+            FirstName = source.FirstName,
+            LastName = source.LastName,
+            Email = source.Email,
+            Phone = source.Phone,
+            Address = MapToAddressExtension(source.Address),
+            CompanyName = source.CompanyName
+        };
+
+    /// <summary>
+    /// Maps InPost address details to async parcel response extension address details.
+    /// </summary>
+    /// <param name="source">The source InPost address.</param>
+    /// <returns>The mapped extension address details.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionAddress MapToAddressExtension(InPostAddress source)
+        => new()
+        {
+            Street = source.Street,
+            BuildingNumber = source.BuildingNumber,
+            ApartmentNumber = source.ApartmentNumber,
+            City = source.City,
+            PostCode = source.PostCode,
+            CountryCode = source.CountryCode
+        };
+
+    /// <summary>
+    /// Maps an InPost offer to async parcel response extension offer details.
+    /// </summary>
+    /// <param name="source">The source InPost offer.</param>
+    /// <returns>The mapped extension offer details.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionOffer MapToOfferExtension(InPostOffer source)
+        => new()
+        {
+                Id = source.Id,
+                Service = new InPostCreateAsyncParcelResponseExtensionService
+                {
+                    Id = source.Service.Id,
+                    Name = source.Service.Name,
+                    Description = source.Service.Description
+                },
+                Carrier = new InPostCreateAsyncParcelResponseExtensionCarrier
+                {
+                    Id = source.Carrier.Id,
+                    Name = source.Carrier.Name,
+                    Description = source.Carrier.Description
+                },
+                AdditionalServices = source.AdditionalServices,
+                Status = source.Status,
+                ExpiresAt = source.ExpiresAt,
+                Rate = source.Rate,
+                Currency = source.Currency,
+                UnavailabilityReasons = source.UnavailabilityReasons
+            };
+
+    /// <summary>
+    /// Maps an InPost transaction to async parcel response extension transaction details.
+    /// </summary>
+    /// <param name="source">The source InPost transaction.</param>
+    /// <returns>The mapped extension transaction details.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionTransaction MapToTransactionExtension(InPostTransaction source)
+        => new()
+        {
+            Id = source.Id,
+            Status = source.Status,
+            CreatedAt = source.CreatedAt,
+            UpdatedAt = source.UpdatedAt,
+            OfferId = source.OfferId
+        };
+
+    /// <summary>
+    /// Maps an InPost parcel to async parcel response extension parcel details.
+    /// </summary>
+    /// <param name="source">The source InPost parcel.</param>
+    /// <returns>The mapped extension parcel details.</returns>
+    private static InPostCreateAsyncParcelResponseExtensionParcel MapToParcelExtension(InPostCreateParcelResponseParcel source)
+        => new()
+        {
+            Id = source.Id,
+            IdentifyNumber = source.IdentifyNumber,
+            TrackingNumber = source.TrackingNumber,
+            IsNonStandard = source.IsNonStandard,
+            Template = source.Template,
+            Dimensions = source.Dimensions is null
+                ? null
+                : new InPostCreateAsyncParcelResponseExtensionDimension
+                {
+                    Length = source.Dimensions.Length,
+                    Width = source.Dimensions.Width,
+                    Height = source.Dimensions.Height,
+                    Unit = source.Dimensions.Unit,
+                    IsNonStandard = source.Dimensions.IsNonStandard
+                },
+            Weight = source.Weight is null
+                ? null
+                : new InPostCreateAsyncParcelResponseExtensionWeight
+                {
+                    Amount = source.Weight.Amount,
+                    Unit = source.Weight.Unit
+                }
         };
 }

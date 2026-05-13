@@ -14,8 +14,8 @@ namespace CourierHub.InPost.Client;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     PropertyNameCaseInsensitive = true,
     GenerationMode = JsonSourceGenerationMode.Metadata)]
-[JsonSerializable(typeof(InPostCreateParcelRequest))]
-[JsonSerializable(typeof(InPostCreateParcelResponse))]
+[JsonSerializable(typeof(InPostCreateAsyncParcelRequest))]
+[JsonSerializable(typeof(InPostCreateAsyncParcelResponse))]
 [JsonSerializable(typeof(InPostGetParcelCreationStatusResponse))]
 [JsonSerializable(typeof(InPostGetParcelsResponse))]
 internal partial class InPostJsonContext : JsonSerializerContext

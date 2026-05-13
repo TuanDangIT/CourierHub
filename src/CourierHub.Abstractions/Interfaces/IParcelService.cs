@@ -23,9 +23,8 @@ namespace CourierHub.Abstractions.Interfaces
         /// <summary>
         /// Retrieves the shipping label for the specified parcel.
         /// </summary>
-        /// <param name="parcelId">The unique identifier of the parcel for which to retrieve the label. Cannot be null or empty.</param>
-        /// <param name="labelFormat">The desired format of the label. Defaults to PDF if not specified.</param>
+        /// <param name="request">The request containing the details for retrieving the label.</param>
         /// <returns>A task that represents the asynchronous operation. The task result contains a byte array with the label data.</returns>
-        Task<byte[]> GetLabelAsync(string parcelId, LabelFormat labelFormat = LabelFormat.Pdf);
+        Task<byte[]> GetLabelAsync(GetLabelRequest request);
     }
 }

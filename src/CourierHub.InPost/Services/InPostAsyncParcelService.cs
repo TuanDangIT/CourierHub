@@ -4,6 +4,7 @@ using CourierHub.Abstractions.Models.Requests;
 using CourierHub.Abstractions.Models.Responses;
 using CourierHub.Core.Logging;
 using CourierHub.InPost.Client;
+using CourierHub.InPost.Client.Models.Extensions;
 using CourierHub.InPost.Mappers;
 using Microsoft.Extensions.Logging;
 
@@ -26,18 +27,34 @@ internal sealed class InPostAsyncParcelService : IAsyncParcelService
     /// Creates a new InPost shipment by mapping the unified request to InPost API contract,
     /// sending the request, and mapping the API response back to unified response model.
     /// </summary>
+    /// <typeparam name="TExtension">The type of courier-specific response extension requested by the caller.</typeparam>
     /// <param name="request">Parcel creation request containing the details of the parcel to be created.</param>
-    /// <returns>Create parcel response.</returns>
-    public Task<CreateAsyncParcelResponse> CreateParcelAsync(CreateParcelRequest request)
+    /// <returns>Create async parcel response with typed extension.</returns>
+    public Task<CreateAsyncParcelResponse<TExtension>> CreateParcelAsync<TExtension>(CreateParcelRequest request)
+        where TExtension : ICourierResponseExtension
     {
         ArgumentNullException.ThrowIfNull(request);
 
         return ExecuteLoggedAsync(nameof(CreateParcelAsync), async () =>
         {
+            if (typeof(TExtension) != typeof(InPostCreateAsyncParcelResponseExtension))
+            {
+                throw new NotSupportedException($"InPost async parcel service supports extension type '{typeof(InPostCreateAsyncParcelResponseExtension).Name}' only.");
+            }
+
             var inPostRequest = _mapper.MapToCreateParcelRequest(request);
             var inPostResponse = await _httpClient.CreateShipmentAsync(inPostRequest);
+            var typedResponse = _mapper.MapToCreateParcelResponse(inPostResponse);
 
-            return _mapper.MapToCreateParcelResponse(inPostResponse);
+            return new CreateAsyncParcelResponse<TExtension>
+            {
+                ParcelId = typedResponse.ParcelId,
+                Status = typedResponse.Status,
+                TrackingNumbers = typedResponse.TrackingNumbers,
+                Extension = typedResponse.Extension is null
+                    ? default
+                    : (TExtension)(ICourierResponseExtension)typedResponse.Extension
+            };
         });
     }
 
@@ -60,14 +77,13 @@ internal sealed class InPostAsyncParcelService : IAsyncParcelService
     /// <summary>
     /// Retrieves shipment label bytes for the given parcel identifier.
     /// </summary>
-    /// <param name="parcelId">The unique identifier of the parcel for which to retrieve the label. Cannot be null or empty.</param>
-    /// <param name="format">The format of the label to retrieve. Defaults to PDF if not specified.</param>
+    /// <param name="request">The request containing the details for retrieving the label.</param>
     /// <returns>Byte array representing the shipment label in the specified format.</returns>
-    public Task<byte[]> GetLabelAsync(string parcelId, LabelFormat format = LabelFormat.Pdf)
+    public Task<byte[]> GetLabelAsync(GetLabelRequest request)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(parcelId);
+        ArgumentNullException.ThrowIfNull(request);
 
-        return ExecuteLoggedAsync(nameof(GetLabelAsync), () => _httpClient.GetLabelAsync(parcelId, format));
+        return ExecuteLoggedAsync(nameof(GetLabelAsync), () => _httpClient.GetLabelAsync(request.ParcelId, request.Format, request.Type));
     }
 
     private async Task<T> ExecuteLoggedAsync<T>(string operationName, Func<Task<T>> action)

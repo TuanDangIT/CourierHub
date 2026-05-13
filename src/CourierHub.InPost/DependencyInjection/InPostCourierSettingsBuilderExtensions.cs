@@ -30,7 +30,8 @@ public static class InPostCourierSettingsBuilderExtensions
         var inPostOptions = new InPostOptions
         {
             OrganizationId = string.Empty,
-            ApiKey = string.Empty
+            ApiKey = string.Empty,
+            BaseUrl = string.Empty
         };
         setupAction(inPostOptions);
 

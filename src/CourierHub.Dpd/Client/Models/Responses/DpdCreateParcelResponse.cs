@@ -2,7 +2,6 @@ namespace CourierHub.Dpd.Client.Models.Responses;
 
 /// <summary>
 /// Represents the response from DPD API when creating a shipment.
-/// Contains session information and packages with their parcels and waybills.
 /// </summary>
 public sealed class DpdCreateParcelResponse
 {
@@ -17,9 +16,19 @@ public sealed class DpdCreateParcelResponse
     public required int SessionId { get; init; }
 
     /// <summary>
+    /// Begin time of the session in DPD system. This timestamp indicates when the shipment creation request was initiated and processing started.
+    /// </summary>
+    public required DateTime BeginTime { get; init; }
+
+    /// <summary>
+    /// End time of the session in DPD system. This timestamp indicates when the shipment creation request was completed and processing ended.
+    /// </summary>
+    public required DateTime EndTime { get; init; }
+
+    /// <summary>
     /// The packages created in this shipment, each containing parcels with waybills.
     /// </summary>
-    public required List<DpdCreateParcelPackage> Packages { get; init; }
+    public required IEnumerable<DpdCreateParcelResponsePackage> Packages { get; init; }
 
     /// <summary>
     /// The trace ID for tracking this request in DPD system.
@@ -30,7 +39,7 @@ public sealed class DpdCreateParcelResponse
 /// <summary>
 /// Represents a package in a DPD shipment response.
 /// </summary>
-public sealed class DpdCreateParcelPackage
+public sealed class DpdCreateParcelResponsePackage
 {
     /// <summary>
     /// The status of the package.
@@ -45,14 +54,14 @@ public sealed class DpdCreateParcelPackage
     /// <summary>
     /// The parcels in this package, each with a waybill.
     /// </summary>
-    public required List<DpdCreateParcelParcel> Parcels { get; init; }
+    public required IEnumerable<DpdCreateParcelResponseParcel> Parcels { get; init; }
 }
 
 /// <summary>
 /// Represents a parcel in a DPD package response.
 /// Contains the waybill (tracking number) for this parcel.
 /// </summary>
-public sealed class DpdCreateParcelParcel
+public sealed class DpdCreateParcelResponseParcel
 {
     /// <summary>
     /// The status of the parcel.

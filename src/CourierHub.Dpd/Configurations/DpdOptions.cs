@@ -15,16 +15,21 @@ namespace CourierHub.Dpd.Configurations
         /// The base URL for the Dpd API.
         /// Defaults to production URL.
         /// </summary>
-        public string BaseUrl { get; set; } = "https://dpdservices.dpd.com.pl";
+        public required string BaseUrl { get; set; } = "https://dpdservices.dpd.com.pl";
 
         /// <summary>
-        /// The API key assigned by Dpd. Required for authentication.
+        /// Login for Basic schema authentication. Required for authentication.
         /// </summary>
-        public required string ApiKey { get; set; }
+        public required string Login { get; set; }
 
         /// <summary>
-        /// The organization ID assigned by Dpd. Required for authentication.
+        /// Password for Basic schema authentication. Required for authentication.
         /// </summary>
-        public required string OrganizationFID { get; set; }
+        public required string Password { get; set; }
+
+        /// <summary>
+        /// The master financial ID assigned by Dpd. Required for authentication.
+        /// </summary>
+        public required string MasterFID { get; set; }
     }
 }

@@ -24,5 +24,5 @@ public sealed class InPostOptions
     /// The base URL for the InPost API (e.g., "https://api-shipx-pl.inpost.tech").
     /// Defaults to production URL.
     /// </summary>
-    public string BaseUrl { get; set; } = "https://api-shipx-pl.inpost.tech";
+    public required string BaseUrl { get; set; } = "https://api-shipx-pl.inpost.tech";
 }

@@ -7,9 +7,9 @@ using System.Text;
 namespace CourierHub.Abstractions.Models.Requests;
 
 /// <summary>
-/// Represents a request to create a new parcel with a courier provider.
+/// Represents a request to create a new parcel with a courier provider using an asynchronous processing model. 
 /// </summary>
-public record CreateParcelRequest
+public record class CreateAsyncParcelRequest
 {
     /// <summary>
     /// The party sending the parcel (shipper).
@@ -74,23 +74,27 @@ public record CreateParcelRequest
     /// <summary>
     /// Is Return shipment. Indicates whether the parcel is being sent as a return to the sender. This is optional and may not be supported by all courier providers. If true, it signifies that the parcel is intended to be returned to the sender rather than delivered to a recipient. The specific handling of return shipments is determined by each courier provider.
     /// </summary>
-    public bool? IsReturn { get; init; } 
-    
+    public bool? IsReturn { get; init; }
+
     /// <summary>
     /// Additional comments, if applicable. This is optional and may not be supported by all courier providers.
     /// </summary>
     public string? Comments { get; init; }
 
     /// <summary>
-    /// Courier-specific metadata and optional parameters.
+    /// Courier-specific extension for additional functionality or data.
     /// </summary>
-    /// <remarks>
-    /// This dictionary serves as an escape hatch for courier-specific fields that don't fit
-    /// the standardized model. Each courier provider is responsible for extracting and using
-    /// the metadata relevant to it.
-    /// 
-    /// Key naming convention: "{CourierName}_{PropertyName}" or "{CourierName}_{PropertyName}.{SubPropertyName}" and so on for nested properties.
-    /// Example: "InPost_MPK", "Dpd_ServiceType", "Furgonetka_Insurance"
-    /// </remarks>
-    public Dictionary<string, object> Metadata { get; init; } = [];
+    public ICourierRequestExtension? Extension { get; init; }
+}
+
+/// <summary>
+/// Represents a request to create a new parcel with a courier provider using an asynchronous processing model. 
+/// </summary>
+/// <typeparam name="TExtension">TExtension is marker for courier-specific extension data.</typeparam>
+public record class CreateAsyncParcelRequest<TExtension> : CreateParcelRequest where TExtension : ICourierRequestExtension
+{
+    /// <summary>
+    /// Courier-specific extension for additional functionality or data.
+    /// </summary>
+    public TExtension? Extension { get; init; }
 }

@@ -1,4 +1,4 @@
-namespace CourierHub.Abstractions.Exceptions;
+namespace CourierHub.Core.Exceptions;
 
 /// <summary>
 /// Represents the base exception for all CourierHub-specific errors.

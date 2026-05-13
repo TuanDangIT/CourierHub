@@ -51,7 +51,7 @@ public abstract class HttpClientBase
     /// <param name="httpClient">The HTTP client used for API communication. Required.</param>
     /// <param name="logger">Optional logger instance.</param>
     /// <param name="resilienceOptions">Optional resilience settings. If null, default settings are used.</param>
-    protected HttpClientBase(HttpClient httpClient, ILogger? logger = null, HttpResilienceOptions? resilienceOptions = null)
+    protected HttpClientBase(HttpClient httpClient, ILogger? logger = default, HttpResilienceOptions? resilienceOptions = default)
     {
         _httpClient = httpClient;
         _logger = logger;
@@ -92,13 +92,7 @@ public abstract class HttpClientBase
 
             _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
 
-            //For debugging purposes.
-            var payload = await httpRequest.Content!.ReadAsStringAsync(cancellationToken);
-
             using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
-
-            //For debugging purposes.
-            var responseString = await response.Content!.ReadAsStringAsync(cancellationToken);
 
             _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
 
@@ -208,14 +202,18 @@ public abstract class HttpClientBase
     {
         if (!_resilienceOptions.Enabled)
         {
-            return await action(cancellationToken);
+            using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+            timeoutCts.CancelAfter(_resilienceOptions.RequestTimeout);
+            return await action(timeoutCts.Token);
         }
 
         for (var attempt = 0; ; attempt++)
         {
             try
             {
-                return await action(cancellationToken);
+                using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                timeoutCts.CancelAfter(_resilienceOptions.RequestTimeout);
+                return await action(timeoutCts.Token);
             }
             catch (Exception ex) when (ShouldRetry(ex, attempt, cancellationToken))
             {

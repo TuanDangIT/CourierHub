@@ -9,7 +9,7 @@ namespace CourierHub.InPost.Client.Models.Requests;
 /// <summary>
 /// InPost specific request model for creating a new parcel. This class encapsulates all the necessary information required by InPost to process a parcel creation request, including sender and receiver details, parcel information, service code, and additional attributes specific to InPost's requirements.
 /// </summary>
-internal sealed class InPostCreateParcelRequest
+internal sealed class InPostCreateAsyncParcelRequest
 {
     /// <summary>
     /// The party sending the parcel (shipper).
@@ -77,9 +77,9 @@ internal sealed class InPostCreateParcelRequest
     public IEnumerable<string>? AdditionalServices { get; init; }
 
 
-    /// <summary>
-    /// TODO: Decide whether to include this property in the request model.
-    /// </summary>
+    // /// <summary>
+    // /// TODO: Decide whether to include this property in the request model.
+    // /// </summary>
     //public bool? OnlyChoiceOfOffer { get; init; }
 }
 

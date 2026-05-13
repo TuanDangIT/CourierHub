@@ -9,7 +9,7 @@ namespace CourierHub.InPost.Client.Models.Responses;
 /// <summary>
 /// InPost specific response model for a successful parcel creation. Contains all details returned by the InPost API.
 /// </summary>
-internal sealed class InPostCreateParcelResponse
+internal sealed class InPostCreateAsyncParcelResponse
 {
     /// <summary>
     /// The URI/href reference for this shipment resource in the InPost API.
@@ -33,9 +33,8 @@ internal sealed class InPostCreateParcelResponse
 
     /// <summary>
     /// The return shipment tracking number. This value is provided only if package is returned to sender, meaning delivery failed.
-    /// TODO: Veriy if it's needed.
     /// </summary>
-    //public string? ReturnTrackingNumber { get; init; }
+    public string? ReturnTrackingNumber { get; init; }
 
     /// <summary>
     /// The service code used for this shipment.
@@ -136,7 +135,7 @@ internal sealed class InPostCreateParcelResponse
     /// <summary>
     /// Parcels that are associated with this shipment. This field contains a list of all parcels that are part of this shipment, including their dimensions, weight, and any other relevant details. 
     /// </summary>
-    public IEnumerable<InPostCreateParcelResponseParcel> Parcels { get; init; } = [];
+    public required IEnumerable<InPostCreateParcelResponseParcel> Parcels { get; init; } 
 
     /// <summary>
     /// The timestamp when the shipment was created in the InPost ShipX system.

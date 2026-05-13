@@ -2,7 +2,9 @@
 using CourierHub.Abstractions.Interfaces;
 using CourierHub.Core.Base;
 using CourierHub.Core.Configuration;
+using CourierHub.Dpd.Client;
 using CourierHub.Dpd.Configurations;
+using CourierHub.Dpd.Mappers;
 using CourierHub.Dpd.Services;
 using Microsoft.Extensions.Logging;
 using System;
@@ -45,7 +47,8 @@ namespace CourierHub.Dpd
             ArgumentNullException.ThrowIfNull(dpdOptions);
             ArgumentNullException.ThrowIfNull(httpResilienceOptions);
 
-            _parcelService = new DpdParcelService();
+            var dpdHttpClient = new DpdHttpClient(httpClient, dpdOptions, httpResilienceOptions, logger);
+            _parcelService = new DpdParcelService(dpdHttpClient, new DpdCreateParcelMapper(), logger);
         }
 
         /// <summary>

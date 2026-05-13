@@ -42,7 +42,7 @@ internal sealed class InPostHttpClient : HttpClientBase
     /// <param name="shipment">The shipment details to be created.</param>
     /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous operation, containing the InPostCreateParcelResponse DTO.</returns>
-    public Task<InPostCreateParcelResponse> CreateShipmentAsync(InPostCreateParcelRequest shipment, CancellationToken cancellationToken = default)
+    public Task<InPostCreateAsyncParcelResponse> CreateShipmentAsync(InPostCreateAsyncParcelRequest shipment, CancellationToken cancellationToken = default)
     {
         var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments";
         return PostAsync(
@@ -72,12 +72,13 @@ internal sealed class InPostHttpClient : HttpClientBase
     /// Downloads shipment label bytes for the specified parcel identifier.
     /// </summary>
     /// <param name="parcelId">The identifier of the parcel for which to download the label.</param>
-    /// <param name="format">The desired format of the label (e.g., PDF, ZPL, ELP). Default is PDF.</param>
+    /// <param name="format">The desired format of the label (e.g., PDF, ZPL, ELP).</param>
+    /// <param name="type">The type of the label to download (e.g., "normal", "A6").</param>
     /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous operation, containing the label bytes.</returns>
-    public Task<byte[]> GetLabelAsync(string parcelId, LabelFormat format = LabelFormat.Pdf, CancellationToken cancellationToken = default)
+    public Task<byte[]> GetLabelAsync(string parcelId, string format, string type, CancellationToken cancellationToken = default)
     {
-        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments/{parcelId}/label?format={format}";
+        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments/{parcelId}/label?format={format}&type={type}";
         return GetAsync(endpoint, cancellationToken: cancellationToken);
     }
 }
