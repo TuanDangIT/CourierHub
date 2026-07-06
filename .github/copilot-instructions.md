@@ -7,3 +7,7 @@
 ## Code Style
 - When using default arguments in methods, use the 'default' keyword instead of 'null'. Example: 'T? defaultValue = default' instead of 'T? defaultValue = null'.
 - Prefer naming static helper classes like `MetadataExtensions` and `AddressFormattingExtensions` as utilities rather than extensions, since they are static utility classes.
+
+## Documentation
+- Every property class should include XML summary documentation for its properties.
+- Constructors and methods should include XML summary documentation.

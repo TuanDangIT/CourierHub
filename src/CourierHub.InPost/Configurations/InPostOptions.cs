@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using CourierHub.Core.Configuration;
 
 namespace CourierHub.InPost.Configurations;
 
@@ -21,8 +20,7 @@ public sealed class InPostOptions
     public required string ApiKey { get; set; }
 
     /// <summary>
-    /// The base URL for the InPost API (e.g., "https://api-shipx-pl.inpost.tech").
-    /// Defaults to production URL.
+    /// The base URL for the InPost API.
     /// </summary>
-    public required string BaseUrl { get; set; } = "https://api-shipx-pl.inpost.tech";
+    public required string BaseUrl { get; set; }
 }

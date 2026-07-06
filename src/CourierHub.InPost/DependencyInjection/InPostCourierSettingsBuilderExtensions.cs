@@ -1,9 +1,7 @@
-using CourierHub.Abstractions.Interfaces;
-using CourierHub.Core.Configuration;
-using CourierHub.Extensions.DependencyInjection;
+using CourierHub.Core.DependencyInjection;
 using CourierHub.InPost.Configurations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Http.Resilience;
 
 namespace CourierHub.InPost.DependencyInjection;
 
@@ -17,12 +15,8 @@ public static class InPostCourierSettingsBuilderExtensions
     /// </summary>
     /// <param name="builder">Courier settings builder.</param>
     /// <param name="setupAction">Action used to configure InPost options.</param>
-    /// <param name="resilienceSetupAction">Optional action used to configure HTTP resilience settings for InPost.</param>
     /// <returns>The same builder instance for fluent chaining.</returns>
-    public static CourierSettingsBuilder AddInPost(
-        this CourierSettingsBuilder builder,
-        Action<InPostOptions> setupAction,
-        Action<HttpResilienceOptions>? resilienceSetupAction = default)
+    public static CourierHubSettingsBuilder AddInPost(this CourierHubSettingsBuilder builder, Action<InPostOptions> setupAction)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(setupAction);
@@ -45,19 +39,37 @@ public static class InPostCourierSettingsBuilderExtensions
             throw new ArgumentException("InPost ApiKey cannot be null or empty.", nameof(setupAction));
         }
 
-        var resilienceOptions = new HttpResilienceOptions();
-        resilienceSetupAction?.Invoke(resilienceOptions);
+        if (string.IsNullOrWhiteSpace(inPostOptions.BaseUrl))
+        {
+            throw new ArgumentException("InPost BaseUrl cannot be null or empty.", nameof(setupAction));
+        }
 
         builder.Services.AddSingleton(inPostOptions);
 
-        builder.Services.AddHttpClient("CourierHub.InPost");
+        var sharedHttpOptions = builder.Http;
+        builder.Services
+            .AddHttpClient<IInpostCourierProvider, InPostCourierProvider>((sp, httpClient) =>
+            {
+                httpClient.Timeout = sharedHttpOptions.Timeout;
+                httpClient.BaseAddress = new Uri(sp.GetRequiredService<InPostOptions>().BaseUrl, UriKind.Absolute);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                var handler = new SocketsHttpHandler();
+                if (sharedHttpOptions.PooledConnectionLifetime is { } pooledConnectionLifetime)
+                {
+                    handler.PooledConnectionLifetime = pooledConnectionLifetime;
+                }
 
-        builder.Services.AddScoped<ICourierProvider>(sp =>
-            new InPostCourierProvider(
-                sp.GetRequiredService<IHttpClientFactory>().CreateClient("CourierHub.InPost"),
-                sp.GetRequiredService<InPostOptions>(),
-                resilienceOptions,
-                sp.GetService<ILogger<InPostCourierProvider>>()));
+                return handler;
+            })
+            .AddStandardResilienceHandler(options =>
+            {
+                options.Retry.MaxRetryAttempts = sharedHttpOptions.Retry.MaxRetryAttempts;
+                options.Retry.Delay = sharedHttpOptions.Retry.Delay;
+                options.Retry.MaxDelay = sharedHttpOptions.Retry.MaxDelay;
+                options.Retry.UseJitter = sharedHttpOptions.Retry.UseJitter;
+            });
 
         return builder;
     }

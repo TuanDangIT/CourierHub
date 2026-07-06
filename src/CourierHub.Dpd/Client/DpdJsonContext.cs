@@ -14,8 +14,8 @@ namespace CourierHub.Dpd.Client;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     PropertyNameCaseInsensitive = true,
     GenerationMode = JsonSourceGenerationMode.Metadata)]
-[JsonSerializable(typeof(DpdCreateParcelRequest))]
-[JsonSerializable(typeof(DpdCreateParcelResponse))]
+[JsonSerializable(typeof(CreateParcelRequest))]
+[JsonSerializable(typeof(CreateParcelResponse))]
 internal partial class DpdJsonContext : JsonSerializerContext
 {
 }

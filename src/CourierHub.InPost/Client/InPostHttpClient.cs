@@ -1,84 +1,133 @@
-﻿using CourierHub.Abstractions.Enums;
 using CourierHub.Core.Base;
-using CourierHub.Core.Configuration;
+using CourierHub.Core.Utils;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
 using CourierHub.InPost.Configurations;
 using Microsoft.Extensions.Logging;
 using System.Net.Http.Headers;
-using System.Text.Json;
+using System.Threading;
 
 namespace CourierHub.InPost.Client;
 
-/// <summary>
-/// InPostHttpClient is a specialized HTTP client for interacting with the InPost API.
-/// </summary>
 internal sealed class InPostHttpClient : HttpClientBase
 {
-    /// <summary>
-    /// InPost options containing API credentials and configuration settings necessary for authenticating and interacting with the InPost API.
-    /// </summary>
     private readonly InPostOptions _inPostOptions;
 
-    /// <summary>
-    /// Initialize a new instance of the InPostHttpClient class with the specified dependencies.
-    /// </summary>
-    /// <param name="httpClient">The HTTP client used for making requests to the InPost API.</param>
-    /// <param name="inPostOptions">The InPost options containing API credentials and configuration settings.</param>
-    /// <param name="resilienceOptions">Optional resilience options for handling transient faults.</param>
-    /// <param name="logger">Optional logger for logging HTTP client operations.</param>
-    public InPostHttpClient(HttpClient httpClient, InPostOptions inPostOptions, HttpResilienceOptions? resilienceOptions = default, ILogger? logger = default)
-        : base(httpClient, logger, resilienceOptions)
+    public InPostHttpClient(HttpClient httpClient, InPostOptions inPostOptions, ILogger<InPostHttpClient>? logger = default) : base(httpClient, logger)
     {
-        _inPostOptions = inPostOptions;
+        ArgumentNullException.ThrowIfNull(inPostOptions);
 
-        _httpClient.BaseAddress = new Uri(_inPostOptions.BaseUrl);
+        _inPostOptions = inPostOptions;
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _inPostOptions.ApiKey);
     }
 
-    /// <summary>
-    /// Creates an InPost shipment and returns the normalized InPost response DTO.
-    /// </summary>
-    /// <param name="shipment">The shipment details to be created.</param>
-    /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
-    /// <returns>A task that represents the asynchronous operation, containing the InPostCreateParcelResponse DTO.</returns>
-    public Task<InPostCreateAsyncParcelResponse> CreateShipmentAsync(InPostCreateAsyncParcelRequest shipment, CancellationToken cancellationToken = default)
+    public Task<CreateParcelResponse> CreateShipmentAsync(CreateParcelRequest request, CancellationToken cancellationToken = default)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments";
+
         return PostAsync(
             endpoint,
-            shipment,
-            InPostJsonContext.Default.InPostCreateParcelRequest,
-            InPostJsonContext.Default.InPostCreateParcelResponse,
+            request,
+            InPostJsonContext.Default.CreateParcelRequest,
+            InPostJsonContext.Default.CreateParcelResponse,
             cancellationToken: cancellationToken);
     }
 
-    /// <summary>
-    /// Gets shipment details for the specified parcel identifier.
-    /// </summary>
-    /// <param name="id">The identifier of the parcel to retrieve.</param>
-    /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
-    /// <returns>A task that represents the asynchronous operation, containing the InPostGetParcelResponse DTO.</returns>
-    public async Task<InPostGetParcelCreationStatusResponse> GetParcelCreationStatusAsync(string id, CancellationToken cancellationToken = default)
+    public Task<CreateBatchParcelsResponse> CreateBatchParcelsAsync(CreateBatchParcelsRequest request, CancellationToken cancellationToken = default)
     {
-        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments?id={id}";
-        var response = await GetAsync(endpoint, InPostJsonContext.Default.InPostGetParcelsResponse, cancellationToken: cancellationToken);
+        ArgumentNullException.ThrowIfNull(request);
 
-        var firstItem = response.Items.FirstOrDefault();
-        return firstItem ?? throw new InvalidOperationException($"InPost API returned no shipment items for id '{id}'.");
+        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/batches";
+
+        return PostAsync(
+            endpoint,
+            request,
+            InPostJsonContext.Default.CreateBatchParcelsRequest,
+            InPostJsonContext.Default.CreateBatchParcelsResponse,
+            cancellationToken: cancellationToken);
     }
 
-    /// <summary>
-    /// Downloads shipment label bytes for the specified parcel identifier.
-    /// </summary>
-    /// <param name="parcelId">The identifier of the parcel for which to download the label.</param>
-    /// <param name="format">The desired format of the label (e.g., PDF, ZPL, ELP).</param>
-    /// <param name="type">The type of the label to download (e.g., "normal", "A6").</param>
-    /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
-    /// <returns>A task that represents the asynchronous operation, containing the label bytes.</returns>
-    public Task<byte[]> GetLabelAsync(string parcelId, string format, string type, CancellationToken cancellationToken = default)
+    public Task<PayForParcelResponse> PayForParcelAsync(PayForParcelRequest request, CancellationToken cancellationToken = default)
     {
-        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments/{parcelId}/label?format={format}&type={type}";
+        ArgumentNullException.ThrowIfNull(request);
+
+        var endpoint = $"v1/shipments/{Uri.EscapeDataString(request.ShipmentId)}/buy";
+
+        return PostAsync(
+            endpoint,
+            request,
+            InPostJsonContext.Default.PayForParcelRequest,
+            InPostJsonContext.Default.PayForParcelResponse,
+            cancellationToken: cancellationToken);
+    }
+
+    public Task<GetParcelsResponse> GetParcelsAsync(GetParcelsRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var query = new List<string>();
+
+        QueryStringUtils.Append(query, "id", request.Ids);
+        QueryStringUtils.Append(query, "created_at", request.CreatedAt);
+        QueryStringUtils.Append(query, "created_at_gteq", request.CreatedAtGteq);
+        QueryStringUtils.Append(query, "created_at_lteq", request.CreatedAtLteq);
+        QueryStringUtils.Append(query, "tracking_number", request.TrackingNumber);
+        QueryStringUtils.Append(query, "tracking_number_cont", request.TrackingNumberCont);
+        QueryStringUtils.Append(query, "status", request.Status);
+        QueryStringUtils.Append(query, "service", request.Service);
+        QueryStringUtils.Append(query, "carrier", request.Carrier);
+        QueryStringUtils.Append(query, "insurance_amount_gteq", request.InsuranceAmountGteq);
+        QueryStringUtils.Append(query, "insurance_amount_lteq", request.InsuranceAmountLteq);
+        QueryStringUtils.Append(query, "cod_amount_gteq", request.CodAmountGteq);
+        QueryStringUtils.Append(query, "cod_amount_lteq", request.CodAmountLteq);
+        QueryStringUtils.Append(query, "receiver_name", request.ReceiverName);
+        QueryStringUtils.Append(query, "receiver_address", request.ReceiverAddress);
+        QueryStringUtils.Append(query, "receiver_city", request.ReceiverCity);
+        QueryStringUtils.Append(query, "receiver_post_code", request.ReceiverPostCode);
+        QueryStringUtils.Append(query, "receiver_country_code", request.ReceiverCountryCode);
+        QueryStringUtils.Append(query, "receiver_phone", request.ReceiverPhone);
+        QueryStringUtils.Append(query, "receiver_email", request.ReceiverEmail);
+        QueryStringUtils.Append(query, "sender_name", request.SenderName);
+        QueryStringUtils.Append(query, "sender_address", request.SenderAddress);
+        QueryStringUtils.Append(query, "sender_city", request.SenderCity);
+        QueryStringUtils.Append(query, "sender_post_code", request.SenderPostCode);
+        QueryStringUtils.Append(query, "sender_country_code", request.SenderCountryCode);
+        QueryStringUtils.Append(query, "sender_phone", request.SenderPhone);
+        QueryStringUtils.Append(query, "sender_email", request.SenderEmail);
+        QueryStringUtils.Append(query, "monitoring", request.Monitoring);
+        QueryStringUtils.Append(query, "external_customer_id", request.ExternalCustomerId);
+        QueryStringUtils.Append(query, "sending_method", request.SendingMethod);
+        QueryStringUtils.Append(query, "only_choice_active_offers", request.OnlyChoiceActiveOffers);
+        QueryStringUtils.Append(query, "offers_status", request.OffersStatus);
+        QueryStringUtils.Append(query, "page", request.Page);
+        QueryStringUtils.Append(query, "per_page", request.PerPage);
+        QueryStringUtils.Append(query, "sort_by", request.SortBy);
+        QueryStringUtils.Append(query, "sort_order", request.SortOrder);
+
+        var queryString = query.Count == 0 ? string.Empty : "?" + string.Join("&", query);
+
+        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments{queryString}";
+
+        return GetAsync(endpoint, InPostJsonContext.Default.GetParcelsResponse, cancellationToken: cancellationToken);
+    }
+
+    public Task<GetBatchParcelsResponse> GetBatchParcelsAsync(GetBatchParcelsRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var endpoint = $"v1/batches/{Uri.EscapeDataString(request.Id.ToString())}";
+
+        return GetAsync(endpoint, InPostJsonContext.Default.GetBatchParcelsResponse, cancellationToken: cancellationToken);
+    }
+
+    public Task<byte[]> GetLabelAsync(GetLabelRequest request, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var endpoint = $"v1/shipments/{Uri.EscapeDataString(request.ShipmentId)}/label?format={Uri.EscapeDataString(request.Format.ToLowerInvariant())}&type={Uri.EscapeDataString(request.Type.ToLowerInvariant())}";
+
         return GetAsync(endpoint, cancellationToken: cancellationToken);
     }
 }

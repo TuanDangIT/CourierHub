@@ -25,6 +25,6 @@ public abstract class CourierHubException : Exception
     /// <param name="innerException">The exception that caused the current exception.</param>
     protected CourierHubException(string message, Exception innerException)
         : base(message, innerException)
-    {
+    { 
     }
 }

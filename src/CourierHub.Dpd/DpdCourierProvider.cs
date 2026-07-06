@@ -1,10 +1,6 @@
-﻿using CourierHub.Abstractions.Enums;
-using CourierHub.Abstractions.Interfaces;
-using CourierHub.Core.Base;
-using CourierHub.Core.Configuration;
+﻿using CourierHub.Core.Base;
 using CourierHub.Dpd.Client;
 using CourierHub.Dpd.Configurations;
-using CourierHub.Dpd.Mappers;
 using CourierHub.Dpd.Services;
 using Microsoft.Extensions.Logging;
 using System;
@@ -13,47 +9,32 @@ using System.Text;
 
 namespace CourierHub.Dpd
 {
-    internal class DpdCourierProvider : CourierProviderBase
+    /// <summary>
+    /// DPD courier provider implementation that integrates with the DPD API.
+    /// </summary>
+    public sealed class DpdCourierProvider : CourierProviderBase, IDpdCourierProvider
     {
         /// <summary>
-        /// ParcelService implementation that provides methods for managing parcels.
+        /// Parcel service for managing shipments and related operations with the DPD API.
         /// </summary>
-        private readonly IParcelService _parcelService;
+        public IParcelService Parcels { get; }
 
         /// <summary>
-        /// Stable provider identifier.
+        /// Initializes a new instance of the <see cref="DpdCourierProvider"/> class with the specified dependencies.
         /// </summary>
-        public override string Name => "Dpd";
-
-        /// <summary>
-        /// Built-in provider enum value.
-        /// </summary>
-        public override CourierProvider? Provider => CourierProvider.Dpd;
-
-        /// <summary>
-        /// Initializes a new instance of the DpdCourierProvider class with the specified dependencies.
-        /// </summary>
-        /// <param name="httpClient">The HttpClient instance for making API calls to Dpd.</param>
-        /// <param name="dpdOptions">The Dpd options containing API credentials and configuration settings.</param>
-        /// <param name="httpResilienceOptions">The Http resilience options for handling transient failures.</param>
+        /// <param name="httpClient">The HttpClient instance for making API calls to DPD.</param>
+        /// <param name="dpdOptions">The DPD options containing API credentials and configuration settings.</param>
         /// <param name="logger">The logger instance for logging.</param>
         public DpdCourierProvider(
             HttpClient httpClient,
             DpdOptions dpdOptions,
-            HttpResilienceOptions httpResilienceOptions,
-            ILogger? logger = default) : base(logger)
+            ILogger<DpdCourierProvider>? logger = default) : base(logger)
         {
             ArgumentNullException.ThrowIfNull(httpClient);
             ArgumentNullException.ThrowIfNull(dpdOptions);
-            ArgumentNullException.ThrowIfNull(httpResilienceOptions);
 
-            var dpdHttpClient = new DpdHttpClient(httpClient, dpdOptions, httpResilienceOptions, logger);
-            _parcelService = new DpdParcelService(dpdHttpClient, new DpdCreateParcelMapper(), logger);
+            var dpdHttpClient = new DpdHttpClient(httpClient, dpdOptions, logger);
+            Parcels = new ParcelService(dpdHttpClient, logger);
         }
-
-        /// <summary>
-        /// ParcelService implementation that provides methods for managing parcels.
-        /// </summary>
-        public override IParcelService? ParcelService => _parcelService;
     }
 }

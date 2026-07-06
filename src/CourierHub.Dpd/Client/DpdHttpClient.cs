@@ -1,5 +1,4 @@
 ﻿using CourierHub.Core.Base;
-using CourierHub.Core.Configuration;
 using CourierHub.Dpd.Client.Models.Requests;
 using CourierHub.Dpd.Client.Models.Responses;
 using CourierHub.Dpd.Configurations;
@@ -22,14 +21,13 @@ internal sealed class DpdHttpClient : HttpClientBase
     /// </summary>
     /// <param name="httpClient">The HTTP client used for making requests to the DPD API.</param>
     /// <param name="dpdOptions">The DPD options containing API credentials and configuration settings.</param>
-    /// <param name="resilienceOptions">Optional resilience options for handling transient faults.</param>
     /// <param name="logger">Optional logger for logging HTTP client operations.</param>
-    public DpdHttpClient(HttpClient httpClient, DpdOptions dpdOptions, HttpResilienceOptions? resilienceOptions = default, ILogger? logger = default)
-        : base(httpClient, logger, resilienceOptions)
+    public DpdHttpClient(HttpClient httpClient, DpdOptions dpdOptions, ILogger? logger = default)
+        : base(httpClient, logger)
     {
-        _dpdOptions = dpdOptions;
+        ArgumentNullException.ThrowIfNull(dpdOptions);
 
-        _httpClient.BaseAddress = new Uri(_dpdOptions.BaseUrl);
+        _dpdOptions = dpdOptions;
 
         var credentials = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_dpdOptions.Login}:{_dpdOptions.Password}"));
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", credentials);
@@ -42,15 +40,15 @@ internal sealed class DpdHttpClient : HttpClientBase
     /// <param name="shipment">The shipment details to be created.</param>
     /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous operation, containing the DpdCreateParcelResponse DTO.</returns>
-    public Task<DpdCreateParcelResponse> CreateShipmentAsync(DpdCreateParcelRequest shipment, CancellationToken cancellationToken = default)
+    public Task<CreateParcelResponse> CreateShipmentAsync(CreateParcelRequest shipment, CancellationToken cancellationToken = default)
     {
         var endpoint = "public/shipment/v1/generatePackagesNumbers";
 
         return PostAsync(
             endpoint,
             shipment,
-            DpdJsonContext.Default.DpdCreateParcelRequest,
-            DpdJsonContext.Default.DpdCreateParcelResponse,
+            DpdJsonContext.Default.CreateParcelRequest,
+            DpdJsonContext.Default.CreateParcelResponse,
             cancellationToken: cancellationToken);
     }
 }

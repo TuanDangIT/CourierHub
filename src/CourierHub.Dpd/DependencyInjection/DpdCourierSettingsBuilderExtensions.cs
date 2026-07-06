@@ -1,9 +1,7 @@
-using CourierHub.Abstractions.Interfaces;
-using CourierHub.Core.Configuration;
+using CourierHub.Core.DependencyInjection;
 using CourierHub.Dpd.Configurations;
-using CourierHub.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Http.Resilience;
 
 namespace CourierHub.Dpd.DependencyInjection;
 
@@ -17,12 +15,8 @@ public static class DpdCourierSettingsBuilderExtensions
     /// </summary>
     /// <param name="builder">Courier settings builder.</param>
     /// <param name="setupAction">Action used to configure Dpd options.</param>
-    /// <param name="resilienceSetupAction">Optional action used to configure HTTP resilience settings for Dpd.</param>
     /// <returns>The same builder instance for fluent chaining.</returns>
-    public static CourierSettingsBuilder AddDpd(
-        this CourierSettingsBuilder builder,
-        Action<DpdOptions> setupAction,
-        Action<HttpResilienceOptions>? resilienceSetupAction = default)
+    public static CourierHubSettingsBuilder AddDpd(this CourierHubSettingsBuilder builder, Action<DpdOptions> setupAction)
     {
         ArgumentNullException.ThrowIfNull(builder);
         ArgumentNullException.ThrowIfNull(setupAction);
@@ -41,19 +35,32 @@ public static class DpdCourierSettingsBuilderExtensions
         ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.Password);
         ArgumentException.ThrowIfNullOrWhiteSpace(dpdOptions.MasterFID);
 
-        var resilienceOptions = new HttpResilienceOptions();
-        resilienceSetupAction?.Invoke(resilienceOptions);
-
         builder.Services.AddSingleton(dpdOptions);
 
-        builder.Services.AddHttpClient("CourierHub.Dpd");
+        var sharedHttpOptions = builder.Http;
+        builder.Services
+            .AddHttpClient<IDpdCourierProvider, DpdCourierProvider>((sp, httpClient) =>
+            {
+                httpClient.Timeout = sharedHttpOptions.Timeout;
+                httpClient.BaseAddress = new Uri(sp.GetRequiredService<DpdOptions>().BaseUrl, UriKind.Absolute);
+            })
+            .ConfigurePrimaryHttpMessageHandler(() =>
+            {
+                var handler = new SocketsHttpHandler();
+                if (sharedHttpOptions.PooledConnectionLifetime is { } pooledConnectionLifetime)
+                {
+                    handler.PooledConnectionLifetime = pooledConnectionLifetime;
+                }
 
-        builder.Services.AddScoped<ICourierProvider>(sp =>
-            new DpdCourierProvider(
-                sp.GetRequiredService<IHttpClientFactory>().CreateClient("CourierHub.Dpd"),
-                sp.GetRequiredService<DpdOptions>(),
-                resilienceOptions,
-                sp.GetService<ILogger<DpdCourierProvider>>()));
+                return handler;
+            })
+            .AddStandardResilienceHandler(options =>
+            {
+                options.Retry.MaxRetryAttempts = sharedHttpOptions.Retry.MaxRetryAttempts;
+                options.Retry.Delay = sharedHttpOptions.Retry.Delay;
+                options.Retry.MaxDelay = sharedHttpOptions.Retry.MaxDelay;
+                options.Retry.UseJitter = sharedHttpOptions.Retry.UseJitter;
+            });
 
         return builder;
     }
