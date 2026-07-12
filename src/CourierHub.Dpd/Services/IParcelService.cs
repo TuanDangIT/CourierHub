@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using CourierHub.Core.Result;
 using CourierHub.Dpd.Client.Models.Requests;
 using CourierHub.Dpd.Client.Models.Responses;
 
@@ -14,7 +15,7 @@ public interface IParcelService
     /// </summary>
     /// <param name="request">The parcel creation request.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the created parcel response.</returns>
-    Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request);
+    Task<Result<CreateParcelResponse>> CreateParcelAsync(CreateParcelRequest request);
 
     /// <summary>
     /// Retrieves the shipment label bytes.

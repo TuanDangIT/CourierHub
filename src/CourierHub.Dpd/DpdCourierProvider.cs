@@ -24,17 +24,17 @@ namespace CourierHub.Dpd
         /// </summary>
         /// <param name="httpClient">The HttpClient instance for making API calls to DPD.</param>
         /// <param name="dpdOptions">The DPD options containing API credentials and configuration settings.</param>
-        /// <param name="logger">The logger instance for logging.</param>
+        /// <param name="loggerFactory">The logger factory instance for creating loggers.</param>
         public DpdCourierProvider(
             HttpClient httpClient,
             DpdOptions dpdOptions,
-            ILogger<DpdCourierProvider>? logger = default) : base(logger)
+            ILoggerFactory? loggerFactory = default) : base(loggerFactory)
         {
             ArgumentNullException.ThrowIfNull(httpClient);
             ArgumentNullException.ThrowIfNull(dpdOptions);
 
-            var dpdHttpClient = new DpdHttpClient(httpClient, dpdOptions, logger);
-            Parcels = new ParcelService(dpdHttpClient, logger);
+            var dpdHttpClient = new DpdHttpClient(httpClient, dpdOptions, loggerFactory?.CreateLogger<DpdHttpClient>());
+            Parcels = new ParcelService(dpdHttpClient, loggerFactory?.CreateLogger<ParcelService>());
         }
     }
 }

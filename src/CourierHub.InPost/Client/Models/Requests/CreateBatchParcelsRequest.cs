@@ -1,4 +1,5 @@
-﻿using CourierHub.InPost.Client.Models.Common;
+﻿using CourierHub.Core.Validation;
+using CourierHub.InPost.Client.Models.Common;
 using System.Collections.Generic;
 
 namespace CourierHub.InPost.Client.Models.Requests;
@@ -6,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Requests;
 /// <summary>
 /// InPost batch creation request model for creating multiple shipments at once.
 /// </summary>
-public sealed class CreateBatchParcelsRequest
+public sealed class CreateBatchParcelsRequest : IValidatable
 {
     /// <summary>
     /// Applies the chosen offer to all shipments in the batch without automatically paying them.
@@ -17,6 +18,16 @@ public sealed class CreateBatchParcelsRequest
     /// Shipments to be created in the batch.
     /// </summary>
     public required IReadOnlyList<CreateBatchParcelsRequestShipment> Shipments { get; init; }
+
+    /// <summary>
+    /// Validates the request model and returns a list of validation errors, if any.
+    /// </summary>
+    /// <returns></returns>
+    /// <exception cref="NotImplementedException"></exception>
+    public IReadOnlyList<ValidationError> Validate()
+    {
+        throw new NotImplementedException();
+    }
 }
 
 /// <summary>

@@ -1,11 +1,17 @@
 ﻿using CourierHub.Core.Base;
+using CourierHub.Core.Errors;
+using CourierHub.Core.Result;
+using CourierHub.Dpd.Client.Models.Errors;
 using CourierHub.Dpd.Client.Models.Requests;
 using CourierHub.Dpd.Client.Models.Responses;
 using CourierHub.Dpd.Configurations;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
+using System.Text.Json;
+using System.Xml.Linq;
 
 namespace CourierHub.Dpd.Client;
 
@@ -40,7 +46,7 @@ internal sealed class DpdHttpClient : HttpClientBase
     /// <param name="shipment">The shipment details to be created.</param>
     /// <param name="cancellationToken">Optional cancellation token for the asynchronous operation.</param>
     /// <returns>A task that represents the asynchronous operation, containing the DpdCreateParcelResponse DTO.</returns>
-    public Task<CreateParcelResponse> CreateShipmentAsync(CreateParcelRequest shipment, CancellationToken cancellationToken = default)
+    public Task<Result<CreateParcelResponse>> CreateShipmentAsync(CreateParcelRequest shipment, CancellationToken cancellationToken = default)
     {
         var endpoint = "public/shipment/v1/generatePackagesNumbers";
 
@@ -49,6 +55,62 @@ internal sealed class DpdHttpClient : HttpClientBase
             shipment,
             DpdJsonContext.Default.CreateParcelRequest,
             DpdJsonContext.Default.CreateParcelResponse,
+            MapDpdErrors,
             cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Maps DPD error responses to a list of <see cref="Error"/> objects based on the content and status code.
+    /// </summary>
+    /// <param name="errorContent">The content of the error response.</param>
+    /// <returns>A list of <see cref="Error"/> objects representing the errors.</returns>
+    private static IReadOnlyList<Error> MapDpdErrors(string errorContent)
+    {
+        var trimmed = errorContent.TrimStart();
+
+        if (trimmed.StartsWith('<'))
+        {
+            return MapDpdXmlErrors(errorContent);
+        }
+
+        return MapDpdJsonErrors(errorContent);
+    }
+
+    /// <summary>
+    /// Maps DPD JSON error responses to a list of <see cref="Error"/> objects based on the content and status code.
+    /// </summary>
+    /// <param name="errorContent">The content of the error response.</param>
+    /// <returns>A list of <see cref="Error"/> objects representing the errors.</returns>
+    private static IReadOnlyList<Error> MapDpdJsonErrors(string errorContent)
+    {
+        using var document = JsonDocument.Parse(errorContent);
+
+        return [new DpdError("status", document.RootElement.GetProperty("status").GetString()!)];
+    }
+
+    /// <summary>
+    /// Maps DPD XML error responses to a list of <see cref="Error"/> objects based on the content and status code.
+    /// </summary>
+    /// <param name="errorContent">The content of the error response.</param>
+    /// <returns>A list of <see cref="Error"/> objects representing the errors.</returns>
+    private static IReadOnlyList<Error> MapDpdXmlErrors(string errorContent)
+    {
+        var document = XDocument.Parse(errorContent);
+
+        var items = document
+            .Descendants("errors")
+            .Where(x => x.Element("userMessage") is not null || x.Element("field") is not null);
+
+        var errors = new List<Error>();
+
+        foreach (var item in items)
+        {
+            var field = item.Element("field")?.Value?.Trim();
+            var message = item.Element("userMessage")?.Value?.Trim();
+
+            errors.Add(new Error("DpdValidationError", field, message));
+        }
+
+        return errors;
     }
 }

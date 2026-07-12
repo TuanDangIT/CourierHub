@@ -1,4 +1,5 @@
 ﻿using CourierHub.Core.Base;
+using CourierHub.Core.Result;
 using CourierHub.InPost.Client;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
@@ -22,7 +23,7 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
         _httpClient = httpClient;
     }
 
-    public async Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request)
+    public async Task<Result<CreateParcelResponse>> CreateParcelAsync(CreateParcelRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -38,12 +39,13 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
         }
     }
 
-    public async Task<CreateBatchParcelsResponse> CreateBatchParcelsAsync(CreateBatchParcelsRequest request)
+    public async Task<Result<CreateBatchParcelsResponse>> CreateBatchParcelsAsync(CreateBatchParcelsRequest request)
     {
-        ArgumentNullException.ThrowIfNull(request);
-
         try
         {
+            var validationResult = Validate(request);
+            if (validationResult.IsFailure) return Result.Failure<CreateBatchParcelsResponse>(validationResult.Errors);
+
             var result = await _httpClient.CreateBatchParcelsAsync(request);
             return result;
         }
@@ -54,7 +56,7 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
         }
     }
 
-    public async Task<PayForParcelResponse> PayForParcelAsync(PayForParcelRequest request)
+    public async Task<Result<PayForParcelResponse>> PayForParcelAsync(PayForParcelRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 

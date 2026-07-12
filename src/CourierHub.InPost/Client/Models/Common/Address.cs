@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CourierHub.Core.Validation;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -8,7 +9,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents a InPost specific address format used for sender and recipient information in the InPost API.
 /// </summary>
-public sealed class Address
+public sealed class Address : IValidatable
 {
     /// <summary>
     /// The street name, optionally including the street type prefix (e.g., "Wiejska" or "ul. Wiejska").
@@ -40,4 +41,21 @@ public sealed class Address
     /// The country code using ISO 3166-1 alpha-2 format (e.g., "PL", "DE", "FR").
     /// </summary>
     public required string CountryCode { get; init; }
+
+    /// <summary>
+    /// Validates the Address object and returns a list of validation errors.
+    /// </summary>
+    /// <returns>List of validation errors (empty if valid).</returns>
+    public IReadOnlyList<ValidationError> Validate()
+    {
+        var errors = ValidationRules.Combine(
+            Street.IsRequired(nameof(Street)),
+            BuildingNumber.IsRequired(nameof(BuildingNumber)),
+            City.IsRequired(nameof(City)),
+            PostCode.IsRequired(nameof(PostCode)),
+            CountryCode.HasLength(2, nameof(CountryCode))
+        );
+
+        return errors;
+    }
 }

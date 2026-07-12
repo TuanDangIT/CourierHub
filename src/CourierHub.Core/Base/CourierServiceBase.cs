@@ -1,6 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
+using CourierHub.Core.Validation;
+using System.Linq;
+using System.Collections.Generic;
+using CourierHub.Core.Errors;
+using CourierHub.Core.Exceptions;
+using CourierHub.Core.Result;
 
 namespace CourierHub.Core.Base;
 
@@ -21,5 +27,19 @@ public abstract class CourierServiceBase
     protected CourierServiceBase(ILogger? logger = default)
     {
         _logger = logger;
+    }
+
+    /// <summary>
+    /// Validates a request object implementing <see cref="IValidatable"/>.
+    /// </summary>
+    /// <param name="request">The object to validate.</param>
+    protected Result.Result Validate(IValidatable request)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var errors = request.Validate();
+        if (errors is null || errors.Count == 0) return Result.Result.Success();
+
+        return Result.Result.Failure(errors);
     }
 }

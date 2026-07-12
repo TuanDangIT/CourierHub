@@ -1,6 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using CourierHub.Core.Result;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
+using System.Threading.Tasks;
 
 namespace CourierHub.InPost.Services;
 
@@ -15,21 +16,21 @@ public interface IParcelService
     /// <remarks>This operation is fully asynchronous on InPost side, meaning that a label will not be created immediately and that user will have to constantly check the status of the operation.</remarks>
     /// <param name="request">The request data for creating the parcel.</param>
     /// <returns>A task that represents the pure asynchronous operation. The task result contains the response with details of the created parcel.</returns>
-    Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request);
+    Task<Result<CreateParcelResponse>> CreateParcelAsync(CreateParcelRequest request);
 
     /// <summary>
     /// Creates multiple parcels in a single batch operation.
     /// </summary>
     /// <param name="request">The batch creation request.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the created batch response.</returns>
-    Task<CreateBatchParcelsResponse> CreateBatchParcelsAsync(CreateBatchParcelsRequest request);
+    Task<Result<CreateBatchParcelsResponse>> CreateBatchParcelsAsync(CreateBatchParcelsRequest request);
 
     /// <summary>
     /// Pays for a shipment by selecting one of its offers.
     /// </summary>
     /// <param name="request">The payment request.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the updated shipment response.</returns>
-    Task<PayForParcelResponse> PayForParcelAsync(PayForParcelRequest request);
+    Task<Result<PayForParcelResponse>> PayForParcelAsync(PayForParcelRequest request);
 
     /// <summary>
     /// Retrieves the shipment label bytes for a shipment.

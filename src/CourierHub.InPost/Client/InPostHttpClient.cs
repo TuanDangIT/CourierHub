@@ -1,10 +1,15 @@
 using CourierHub.Core.Base;
+using CourierHub.Core.Errors;
+using CourierHub.Core.Result;
 using CourierHub.Core.Utils;
+using CourierHub.InPost.Client.Models.Errors;
 using CourierHub.InPost.Client.Models.Requests;
 using CourierHub.InPost.Client.Models.Responses;
 using CourierHub.InPost.Configurations;
 using Microsoft.Extensions.Logging;
+using System.Collections.Generic;
 using System.Net.Http.Headers;
+using System.Text.Json;
 using System.Threading;
 
 namespace CourierHub.InPost.Client;
@@ -21,7 +26,7 @@ internal sealed class InPostHttpClient : HttpClientBase
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _inPostOptions.ApiKey);
     }
 
-    public Task<CreateParcelResponse> CreateShipmentAsync(CreateParcelRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<CreateParcelResponse>> CreateShipmentAsync(CreateParcelRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -32,10 +37,12 @@ internal sealed class InPostHttpClient : HttpClientBase
             request,
             InPostJsonContext.Default.CreateParcelRequest,
             InPostJsonContext.Default.CreateParcelResponse,
+            InPostJsonContext.Default.ErrorResponse,
+            MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
-    public Task<CreateBatchParcelsResponse> CreateBatchParcelsAsync(CreateBatchParcelsRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<CreateBatchParcelsResponse>> CreateBatchParcelsAsync(CreateBatchParcelsRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -46,10 +53,12 @@ internal sealed class InPostHttpClient : HttpClientBase
             request,
             InPostJsonContext.Default.CreateBatchParcelsRequest,
             InPostJsonContext.Default.CreateBatchParcelsResponse,
+            InPostJsonContext.Default.ErrorResponse,
+            MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
-    public Task<PayForParcelResponse> PayForParcelAsync(PayForParcelRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<PayForParcelResponse>> PayForParcelAsync(PayForParcelRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -60,6 +69,8 @@ internal sealed class InPostHttpClient : HttpClientBase
             request,
             InPostJsonContext.Default.PayForParcelRequest,
             InPostJsonContext.Default.PayForParcelResponse,
+            InPostJsonContext.Default.ErrorResponse,
+            MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
@@ -107,7 +118,6 @@ internal sealed class InPostHttpClient : HttpClientBase
         QueryStringUtils.Append(query, "sort_order", request.SortOrder);
 
         var queryString = query.Count == 0 ? string.Empty : "?" + string.Join("&", query);
-
         var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments{queryString}";
 
         return GetAsync(endpoint, InPostJsonContext.Default.GetParcelsResponse, cancellationToken: cancellationToken);
@@ -129,5 +139,43 @@ internal sealed class InPostHttpClient : HttpClientBase
         var endpoint = $"v1/shipments/{Uri.EscapeDataString(request.ShipmentId)}/label?format={Uri.EscapeDataString(request.Format.ToLowerInvariant())}&type={Uri.EscapeDataString(request.Type.ToLowerInvariant())}";
 
         return GetAsync(endpoint, cancellationToken: cancellationToken);
+    }
+
+    /// <summary>
+    /// Maps the InPost error payload into CourierHub errors.
+    /// </summary>
+    private static IReadOnlyList<Error> MapInPostErrors(ErrorResponse response)
+    {
+        var errors = new List<Error>();
+
+        if (response.Status == 400 && string.Equals(response.Error, "validation_failed", StringComparison.OrdinalIgnoreCase) && response.Details is { } details)
+        {
+            FlattenValidationDetails(details, string.Empty, response.Error, response.Message, errors);
+        }
+
+        if (errors.Count == 0)
+        {
+            errors.Add(new InPostError(response.Error, response.Message));
+        }
+
+        return errors;
+    }
+
+    /// <summary>
+    /// Flattens the nested InPost validation details into individual CourierHub errors.
+    /// </summary>
+    private static void FlattenValidationDetails(JsonElement element, string path, string code, string message, IList<Error> errors)
+    { 
+        if (element.ValueKind == JsonValueKind.Object)
+        {
+            foreach (var property in element.EnumerateObject())
+            {
+                var nextPath = string.IsNullOrWhiteSpace(path) ? property.Name : $"{path}.{property.Name}";
+                FlattenValidationDetails(property.Value, nextPath, code, message, errors);
+            }
+            return;
+        }
+
+        errors.Add(new InPostError("InPostValidationError", code, element.GetString()));
     }
 }

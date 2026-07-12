@@ -28,6 +28,7 @@ namespace CourierHub.InPost.Client;
 [JsonSerializable(typeof(PayForParcelResponse))]
 [JsonSerializable(typeof(PayForParcelResponseParcel))]
 [JsonSerializable(typeof(PayForParcelResponseOffer))]
+[JsonSerializable(typeof(ErrorResponse))]
 internal partial class InPostJsonContext : JsonSerializerContext
 {
 }

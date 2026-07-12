@@ -1,4 +1,5 @@
 ﻿using CourierHub.Core.Base;
+using CourierHub.Core.Result;
 using CourierHub.Dpd.Client;
 using CourierHub.Dpd.Client.Models.Requests;
 using CourierHub.Dpd.Client.Models.Responses;
@@ -31,7 +32,7 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
     /// </summary>
     /// <param name="request">The parcel creation request.</param>
     /// <returns>The created parcel response.</returns>
-    public async Task<CreateParcelResponse> CreateParcelAsync(CreateParcelRequest request)
+    public async Task<Result<CreateParcelResponse>> CreateParcelAsync(CreateParcelRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
