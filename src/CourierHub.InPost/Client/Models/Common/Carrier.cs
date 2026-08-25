@@ -7,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents a carrier returned by the InPost API.
 /// </summary>
-public sealed class Carrier
+public sealed class Carrier 
 {
     /// <summary>
     /// The carrier identifier.

@@ -11,10 +11,4 @@ namespace CourierHub.Core.Errors;
 /// <param name="Code">The error code.</param>
 /// <param name="Title">The optional error title.</param>
 /// <param name="Description">The optional error description.</param>
-public record Error(string Code, string? Title = default, string? Description = default)
-{
-    /// <summary>
-    /// Represents a successful operation with no error.
-    /// </summary>
-    public static readonly Error None = new(string.Empty);
-}
+public record Error(string Code, string? Title = default, string? Description = default);

@@ -14,9 +14,10 @@ public static class CourierHubHttpClientFactory
     /// <summary>
     /// Creates and configures an <see cref="HttpClient"/> instance using the supplied HTTP options.
     /// </summary>
+    /// <param name="baseUrl">The base URL for the HTTP client.</param>
     /// <param name="configure">Optional callback used to configure the HTTP options before client creation.</param>
     /// <returns></returns>
-    public static HttpClient CreateHttpClient(Action<HttpOptions>? configure = default)
+    public static HttpClient CreateHttpClient(string baseUrl, Action<HttpOptions>? configure = default)
     {
         var options = new HttpOptions();
         configure?.Invoke(options);
@@ -37,6 +38,7 @@ public static class CourierHubHttpClientFactory
 
         return new HttpClient(new ResiliencePipelineHandler(pipeline, socketsHandler))
         {
+            BaseAddress = new Uri(baseUrl, UriKind.Absolute),
             Timeout = options.Timeout
         };
     }

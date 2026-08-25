@@ -9,7 +9,7 @@ namespace CourierHub.InPost.Client.Models.Common;
 /// <summary>
 /// Represents a party (sender or receiver) specific to InPost API.
 /// </summary>
-public class Peer : IValidatable
+public class Peer
 {
     /// <summary>
     /// The Name.
@@ -47,24 +47,23 @@ public class Peer : IValidatable
     /// </summary>
     public string? CompanyName { get; init; }
 
-    /// <summary>
-    /// Validates the Peer object and returns a list of validation errors.
-    /// </summary>
-    /// <returns>List of validation errors (empty if valid).</returns>
-    public IReadOnlyList<ValidationError> Validate()
-    {
-        var errors = ValidationRules.Combine(
-            FirstName.IsRequired(nameof(FirstName)),
-            LastName.IsRequired(nameof(LastName)),
-            Email.IsRequired(nameof(Email)),
-            Phone.IsRequired(nameof(Phone))
-        );
+    ///// <summary>
+    ///// Validates the Peer object and returns a list of validation errors.
+    ///// </summary>
+    ///// <returns>List of validation errors (empty if valid).</returns>
+    //public IReadOnlyList<ValidationError> Validate()
+    //{
+    //    var errors = ValidationRules.Combine(
+    //        ValidationRules.For(Name, nameof(Name)).HasMaxLength(255),
+    //        ValidationRules.For(FirstName, nameof(FirstName)).IsRequired().HasMaxLength(255),
+    //        ValidationRules.For(LastName, nameof(LastName)).IsRequired().HasMaxLength(255),
+    //        ValidationRules.For(Email, nameof(Email)).IsRequired().HasMaxLength(255),
+    //        ValidationRules.For(Phone, nameof(Phone)).IsRequired().HasMaxLength(255),
+    //        ValidationRules.For(CompanyName, nameof(CompanyName)).HasMaxLength(255)
+    //    );
 
-        // merge nested address errors
-        var addressErrors = Address.Validate();
-        if (addressErrors is not null && addressErrors.Count > 0)
-            errors.AddRange(addressErrors);
+    //    errors.AddRange(Address.Validate());
 
-        return errors;
-    }
+    //    return errors;
+    //}
 }

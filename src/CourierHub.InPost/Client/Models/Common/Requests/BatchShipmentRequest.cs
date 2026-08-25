@@ -1,39 +1,13 @@
-﻿using CourierHub.Core.Validation;
-using CourierHub.InPost.Client.Models.Common;
+﻿using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace CourierHub.InPost.Client.Models.Requests;
-
-/// <summary>
-/// InPost batch creation request model for creating multiple shipments at once.
-/// </summary>
-public sealed class CreateBatchParcelsRequest : IValidatable
-{
-    /// <summary>
-    /// Applies the chosen offer to all shipments in the batch without automatically paying them.
-    /// </summary>
-    public bool OnlyChoiceOfOffer { get; init; }
-
-    /// <summary>
-    /// Shipments to be created in the batch.
-    /// </summary>
-    public required IReadOnlyList<CreateBatchParcelsRequestShipment> Shipments { get; init; }
-
-    /// <summary>
-    /// Validates the request model and returns a list of validation errors, if any.
-    /// </summary>
-    /// <returns></returns>
-    /// <exception cref="NotImplementedException"></exception>
-    public IReadOnlyList<ValidationError> Validate()
-    {
-        throw new NotImplementedException();
-    }
-}
+namespace CourierHub.InPost.Client.Models.Common.Requests;
 
 /// <summary>
 /// InPost request model for creating a single shipment inside a batch operation.
 /// </summary>
-public sealed class CreateBatchParcelsRequestShipment
+public sealed class BatchShipmentRequest
 {
     /// <summary>
     /// Unique caller-provided identifier for the shipment within the batch.
@@ -58,12 +32,12 @@ public sealed class CreateBatchParcelsRequestShipment
     /// <summary>
     /// Insurance details for the parcel, if applicable. 
     /// </summary>
-    public Insurance? Insurance { get; init; }
+    public InsuranceRequest? Insurance { get; init; }
 
     /// <summary>
     /// Cash on delivery details for the parcel, if applicable. 
     /// </summary>
-    public CashOnDelivery? Cod { get; init; }
+    public CashOnDeliveryRequest? Cod { get; init; }
 
     /// <summary>
     /// Service code used by InPost.
@@ -110,4 +84,3 @@ public sealed class CreateBatchParcelsRequestShipment
     /// </summary>
     public bool? OnlyChoiceOfOffer { get; init; }
 }
-

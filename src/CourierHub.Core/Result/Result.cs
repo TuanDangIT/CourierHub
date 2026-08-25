@@ -8,7 +8,7 @@ namespace CourierHub.Core.Result;
 /// <summary>
 /// Represents the result of an operation, indicating success or failure, and optionally containing an error.
 /// </summary>
-public class Result
+public record class Result
 {
     /// <summary>
     /// Initializes a new instance of the <see cref="Result"/> class with the specified success status and error.
@@ -82,7 +82,7 @@ public class Result
 /// Represents the result of an operation that can either be successful with a value of type <typeparamref name="T"/> or failed with an associated error.
 /// </summary>
 /// <typeparam name="T">The type that is returned in result object.</typeparam>
-public class Result<T> : Result
+public record class Result<T> : Result
 {
 
     /// <summary>

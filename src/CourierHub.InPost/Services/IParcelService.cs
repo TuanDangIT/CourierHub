@@ -23,7 +23,7 @@ public interface IParcelService
     /// </summary>
     /// <param name="request">The batch creation request.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the created batch response.</returns>
-    Task<Result<CreateBatchParcelsResponse>> CreateBatchParcelsAsync(CreateBatchParcelsRequest request);
+    Task<Result<CreateParcelBatchResponse>> CreateParcelBatchAsync(CreateParcelBatchRequest request);
 
     /// <summary>
     /// Pays for a shipment by selecting one of its offers.
@@ -37,19 +37,19 @@ public interface IParcelService
     /// </summary>
     /// <param name="request">The request data for retrieving the label.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the label bytes.</returns>
-    Task<byte[]> GetLabelAsync(GetLabelRequest request);
+    Task<Result<byte[]>> GetLabelAsync(GetLabelRequest request);
 
     /// <summary>
     /// Retrieves shipments matching the provided filters.
     /// </summary>
     /// <param name="request">The shipments list request.</param>
     /// <returns>The paged shipments response.</returns>
-    Task<GetParcelsResponse> GetParcelsAsync(GetParcelsRequest request);
+    Task<Result<GetParcelsResponse>> GetParcelsAsync(GetParcelsRequest request);
 
     /// <summary>
     /// Retrieves a batch by identifier.
     /// </summary>
     /// <param name="request">The batch lookup request.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the batch response.</returns>
-    Task<GetBatchParcelsResponse> GetBatchParcelsAsync(GetBatchParcelsRequest request);
+    Task<Result<GetParcelBatchResponse>> GetBatchParcelsAsync(GetParcelBatchRequest request);
 }

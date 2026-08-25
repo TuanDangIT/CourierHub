@@ -13,7 +13,7 @@ namespace CourierHub.Core.Base;
 /// <summary>
 /// Base class for courier service implementations. Provides logging helpers for service operations.
 /// </summary>
-public abstract class CourierServiceBase
+internal abstract class CourierServiceBase
 {
     /// <summary>
     /// Logger instance available to derived service classes.
@@ -27,19 +27,5 @@ public abstract class CourierServiceBase
     protected CourierServiceBase(ILogger? logger = default)
     {
         _logger = logger;
-    }
-
-    /// <summary>
-    /// Validates a request object implementing <see cref="IValidatable"/>.
-    /// </summary>
-    /// <param name="request">The object to validate.</param>
-    protected Result.Result Validate(IValidatable request)
-    {
-        ArgumentNullException.ThrowIfNull(request);
-
-        var errors = request.Validate();
-        if (errors is null || errors.Count == 0) return Result.Result.Success();
-
-        return Result.Result.Failure(errors);
     }
 }

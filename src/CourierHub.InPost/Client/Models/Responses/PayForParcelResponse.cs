@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using CourierHub.InPost.Client.Models.Common;
+using CourierHub.InPost.Client.Models.Common.Responses;
 
 namespace CourierHub.InPost.Client.Models.Responses;
 
@@ -22,7 +23,7 @@ public sealed class PayForParcelResponse
     /// <summary>
     /// Parcels included in the shipment.
     /// </summary>
-    public IReadOnlyList<PayForParcelResponseParcel> Parcels { get; init; } = [];
+    public IReadOnlyList<ParcelPaidResponse> Parcels { get; init; } = [];
 
     /// <summary>
     /// Shipment custom attributes.
@@ -32,12 +33,12 @@ public sealed class PayForParcelResponse
     /// <summary>
     /// Sender details.
     /// </summary>
-    public required GetParcelsResponsePeer Sender { get; init; }
+    public required PeerResponse Sender { get; init; }
 
     /// <summary>
     /// Receiver details.
     /// </summary>
-    public required GetParcelsResponsePeer Receiver { get; init; }
+    public required PeerResponse Receiver { get; init; }
 
     /// <summary>
     /// Shipment creation timestamp.
@@ -47,12 +48,12 @@ public sealed class PayForParcelResponse
     /// <summary>
     /// Cash on delivery details for the shipment.
     /// </summary>
-    public CashOnDelivery? CodAmount { get; init; }
+    public CashOnDeliveryResponse? CodAmount { get; init; }
 
     /// <summary>
     /// Insurance details for the shipment.
     /// </summary>
-    public Insurance? Insurance { get; init; }
+    public InsuranceResponse? Insurance { get; init; }
 
     /// <summary>
     /// Reference value provided for the shipment.
@@ -75,79 +76,17 @@ public sealed class PayForParcelResponse
     public string? ExternalCustomerId { get; init; }
 
     /// <summary>
-    /// Offers available for the shipment.
+    /// Selected offers for the shipment.
     /// </summary>
-    public IReadOnlyList<PayForParcelResponseOffer> Offers { get; init; } = [];
+    public IReadOnlyList<OfferSelectedResponse> Offers { get; init; } = [];
 
     /// <summary>
     /// Selected offer for the shipment.
     /// </summary>
-    public PayForParcelResponseOffer? SelectedOffer { get; init; }
+    public OfferSelectedResponse? SelectedOffer { get; init; }
 
     /// <summary>
     /// Transactions associated with the shipment.
     /// </summary>
     public IReadOnlyList<Transaction> Transactions { get; init; } = [];
-}
-
-/// <summary>
-/// Represents a parcel item returned in the InPost payment response.
-/// </summary>
-public sealed class PayForParcelResponseParcel : Parcel
-{
-    /// <summary>
-    /// Tracking number assigned to the parcel, if available.
-    /// </summary>
-    public string? TrackingNumber { get; init; }
-}
-
-/// <summary>
-/// Represents an offer item returned in the InPost payment response.
-/// </summary>
-public sealed class PayForParcelResponseOffer
-{
-    /// <summary>
-    /// Offer identifier.
-    /// </summary>
-    public required int Id { get; init; }
-
-    /// <summary>
-    /// Service details for the offer.
-    /// </summary>
-    public required Service Service { get; init; }
-
-    /// <summary>
-    /// Carrier details for the offer.
-    /// </summary>
-    public required Carrier Carrier { get; init; }
-
-    /// <summary>
-    /// Additional services included in the offer.
-    /// </summary>
-    public IReadOnlyList<string> AdditionalServices { get; init; } = [];
-
-    /// <summary>
-    /// Offer status.
-    /// </summary>
-    public required string Status { get; init; }
-
-    /// <summary>
-    /// Expiration date of the offer.
-    /// </summary>
-    public DateTimeOffset? ValidTo { get; init; }
-
-    /// <summary>
-    /// Offer price.
-    /// </summary>
-    public decimal? Rate { get; init; }
-
-    /// <summary>
-    /// Currency code.
-    /// </summary>
-    public required string Currency { get; init; }
-
-    /// <summary>
-    /// Reasons why the offer is unavailable, if any.
-    /// </summary>
-    public IReadOnlyList<string> UnavailabilityReasons { get; init; } = [];
 }

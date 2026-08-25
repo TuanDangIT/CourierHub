@@ -15,19 +15,15 @@ namespace CourierHub.InPost.Client;
     PropertyNameCaseInsensitive = true,
     GenerationMode = JsonSourceGenerationMode.Metadata)]
 [JsonSerializable(typeof(CreateParcelRequest))]
-[JsonSerializable(typeof(CreateBatchParcelsRequest))]
-[JsonSerializable(typeof(CreateBatchParcelsRequestShipment))]
+[JsonSerializable(typeof(CreateParcelBatchRequest))]
 [JsonSerializable(typeof(CreateParcelResponse))]
-[JsonSerializable(typeof(CreateBatchParcelsResponse))]
-[JsonSerializable(typeof(CreateBatchParcelsResponseShipment))]
+[JsonSerializable(typeof(CreateParcelBatchResponse))]
 [JsonSerializable(typeof(GetParcelsRequest))]
 [JsonSerializable(typeof(GetParcelsResponse))]
-[JsonSerializable(typeof(GetBatchParcelsRequest))]
-[JsonSerializable(typeof(GetBatchParcelsResponse))]
+[JsonSerializable(typeof(GetParcelBatchRequest))]
+[JsonSerializable(typeof(GetParcelBatchResponse))]
 [JsonSerializable(typeof(PayForParcelRequest))]
 [JsonSerializable(typeof(PayForParcelResponse))]
-[JsonSerializable(typeof(PayForParcelResponseParcel))]
-[JsonSerializable(typeof(PayForParcelResponseOffer))]
 [JsonSerializable(typeof(ErrorResponse))]
 internal partial class InPostJsonContext : JsonSerializerContext
 {

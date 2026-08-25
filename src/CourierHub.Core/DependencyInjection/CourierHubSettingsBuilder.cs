@@ -1,7 +1,7 @@
 using CourierHub.Core.Http;
 using CourierHub.Core.Logging;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Logging;
+//using Microsoft.Extensions.Http.Logging;
 using Microsoft.Extensions.Logging;
 
 namespace CourierHub.Core.DependencyInjection;
@@ -24,7 +24,7 @@ public sealed class CourierHubSettingsBuilder
     /// <summary>
     /// The shared logging options used by all courier providers.
     /// </summary>
-    public LoggingOptions Logging { get; } = new();
+    public LoggerOptions Logging { get; } = new();
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CourierHubSettingsBuilder"/> class.
@@ -57,18 +57,17 @@ public sealed class CourierHubSettingsBuilder
     {
         ArgumentNullException.ThrowIfNull(configure);
 
-        var options = new LoggerOptions();
-        configure(options);
+        configure(Logging);
 
         Services.AddLogging(builder =>
         {
-            builder.SetMinimumLevel(options.MinimumLevel);
-            builder.AddFilter("CourierHub", options.MinimumLevel); 
+            builder.SetMinimumLevel(Logging.MinimumLevel);
+            builder.AddFilter("CourierHub", Logging.MinimumLevel);
 
-            foreach (var (category, level) in options.Filters)
+            foreach (var (category, level) in Logging.Filters)
                 builder.AddFilter(category, level);
 
-            if (options.EnableConsole)
+            if (Logging.EnableConsole)
                 builder.AddConsole();
         });
 

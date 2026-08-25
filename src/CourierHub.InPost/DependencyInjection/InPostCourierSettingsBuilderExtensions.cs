@@ -1,7 +1,6 @@
 using CourierHub.Core.DependencyInjection;
 using CourierHub.InPost.Configurations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Resilience;
 
 namespace CourierHub.InPost.DependencyInjection;
 
@@ -31,17 +30,17 @@ public static class InPostCourierSettingsBuilderExtensions
 
         if (string.IsNullOrWhiteSpace(inPostOptions.OrganizationId))
         {
-            throw new ArgumentException("InPost OrganizationId cannot be null or empty.", nameof(setupAction));
+            throw new ArgumentException("InPost OrganizationId cannot be null or empty.", nameof(inPostOptions.OrganizationId));
         }
 
         if (string.IsNullOrWhiteSpace(inPostOptions.ApiKey))
         {
-            throw new ArgumentException("InPost ApiKey cannot be null or empty.", nameof(setupAction));
+            throw new ArgumentException("InPost ApiKey cannot be null or empty.", nameof(inPostOptions.ApiKey));
         }
 
         if (string.IsNullOrWhiteSpace(inPostOptions.BaseUrl))
         {
-            throw new ArgumentException("InPost BaseUrl cannot be null or empty.", nameof(setupAction));
+            throw new ArgumentException("InPost BaseUrl cannot be null or empty.", nameof(inPostOptions.BaseUrl));
         }
 
         builder.Services.AddSingleton(inPostOptions);

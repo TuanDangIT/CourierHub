@@ -18,11 +18,11 @@ public sealed class GetLabelRequest
     /// Format of the label. This is a required field.
     /// </summary>
     /// <remarks>Default is Pdf.</remarks>
-    public required string Format { get; set; } = "Pdf";
+    public string Format { get; set; } = "Pdf";
 
     /// <summary>
     /// Type of the label. This is a required field.
     /// </summary>
     /// <remarks>Default is normal.</remarks>
-    public required string Type { get; set; } = "normal";
+    public string Type { get; set; } = "normal";
 }

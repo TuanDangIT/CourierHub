@@ -1,4 +1,5 @@
 ﻿using CourierHub.InPost.Client.Models.Common;
+using CourierHub.InPost.Client.Models.Common.Requests;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
@@ -27,17 +28,17 @@ public sealed class CreateParcelRequest
     /// <summary>
     /// Insurance details for the parcel, if applicable. 
     /// </summary>
-    public Insurance? Insurance { get; init; }
+    public InsuranceRequest? Insurance { get; init; }
 
     /// <summary>
     /// Cash on delivery details for the parcel, if applicable. 
     /// </summary>
-    public CashOnDelivery? Cod { get; init; }
+    public CashOnDeliveryRequest? Cod { get; init; }
 
     /// <summary>
     /// Service code used by InPost.
     /// </summary>
-    public required string Service { get; init; }
+    public string? Service { get; init; } 
 
     /// <summary>
     /// Custom attributes for the shipment, if applicable.

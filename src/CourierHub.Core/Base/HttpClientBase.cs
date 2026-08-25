@@ -17,7 +17,7 @@ namespace CourierHub.Core.Base;
 /// error handling, and configurable resilience for transient HTTP failures.
 /// Designed for use in both Dependency Injection and manual instantiation scenarios.
 /// </remarks>
-public abstract class HttpClientBase
+internal abstract class HttpClientBase
 {
     /// <summary>
     /// Provides access to the HTTP client.
@@ -177,14 +177,16 @@ public abstract class HttpClientBase
     /// <typeparam name="TResponse">The expected response payload type.</typeparam>
     /// <param name="url">The relative or absolute endpoint URL.</param>
     /// <param name="responseTypeInfo">Source-generated JSON metadata for <typeparamref name="TResponse"/>.</param>
+    /// <param name="mapErrorResponse">Optional callback for mapping to error response.</param>
     /// <param name="configureRequest">Optional callback for customizing the outgoing HTTP request (for example, adding per-request headers).</param>
     /// <param name="cancellationToken">A token to cancel the HTTP operation.</param>
     /// <returns>The deserialized response payload.</returns>
     /// <exception cref="HttpRequestException">Thrown when the HTTP response indicates a non-success status code.</exception>
     /// <exception cref="InvalidOperationException">Thrown when the API returns an empty response body.</exception>
-    protected async Task<TResponse> GetAsync<TResponse>(
+    protected async Task<Result<TResponse>> GetAsync<TResponse>(
         string url,
         JsonTypeInfo<TResponse> responseTypeInfo,
+        Func<string, IReadOnlyList<Error>>? mapErrorResponse = default,
         Action<HttpRequestMessage>? configureRequest = null,
         CancellationToken cancellationToken = default)
     {
@@ -205,11 +207,85 @@ public abstract class HttpClientBase
             var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
             _logger?.LogError("API Error at {Url}: {Status} - {Content}", url, response.StatusCode, errorContent);
-            response.EnsureSuccessStatusCode();
+
+            if (mapErrorResponse is not null)
+            {
+                var mappedErrors = mapErrorResponse(errorContent);
+                if (mappedErrors.Count > 0)
+                {
+                    return Result.Result.Failure<TResponse>(mappedErrors);
+                }
+            }
+
+            return Result.Result.Failure<TResponse>([
+                new Error(
+                    ((int)response.StatusCode).ToString(),
+                    response.ReasonPhrase,
+                    errorContent)
+            ]);
         }
 
         var result = await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken);
-        return result ?? throw new InvalidOperationException("API returned an empty response.");
+        return Result.Result.Success(result ?? throw new InvalidOperationException("API returned an empty response."));
+    }
+
+    /// <summary>
+    /// Sends a GET request and deserializes both the success response and the error response using Source Generators.
+    /// Applies transient retry behavior based on configured resilience options.
+    /// </summary>
+    /// <typeparam name="TResponse">The expected response payload type.</typeparam>
+    /// <typeparam name="TErrorResponse">The error response payload type.</typeparam>
+    /// <param name="url">The relative or absolute endpoint URL.</param>
+    /// <param name="responseTypeInfo">Source-generated JSON metadata for <typeparamref name="TResponse"/>.</param>
+    /// <param name="errorTypeInfo">Source-generated JSON metadata for <typeparamref name="TErrorResponse"/>.</param>
+    /// <param name="mapErrorResponse">Optional callback for mapping to error response.</param>
+    /// <param name="configureRequest">Optional callback for customizing the outgoing HTTP request (for example, adding per-request headers).</param>
+    /// <param name="cancellationToken">A token to cancel the HTTP operation.</param>
+    /// <returns>The deserialized response payload.</returns>
+    /// <exception cref="HttpRequestException">Thrown when the HTTP response indicates a non-success status code.</exception>
+    /// <exception cref="InvalidOperationException">Thrown when the API returns an empty response body.</exception>
+    protected async Task<Result<TResponse>> GetAsync<TResponse, TErrorResponse>(
+        string url,
+        JsonTypeInfo<TResponse> responseTypeInfo,
+        JsonTypeInfo<TErrorResponse> errorTypeInfo,
+        Func<TErrorResponse, IReadOnlyList<Error>>? mapErrorResponse = default,
+        Action<HttpRequestMessage>? configureRequest = default,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        configureRequest?.Invoke(httpRequest);
+
+        _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
+
+        using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+        _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            _logger?.LogError("API Error at {Url}: {Status} - {Content}", url, response.StatusCode, errorContent);
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                var parsedError = JsonSerializer.Deserialize(errorContent, errorTypeInfo);
+                if (parsedError is not null && mapErrorResponse is not null)
+                {
+                    return Result.Result.Failure<TResponse>(mapErrorResponse(parsedError));
+                }
+            }
+
+            return Result.Result.Failure<TResponse>([
+                new Error(
+                    ((int)response.StatusCode).ToString(),
+                    response.ReasonPhrase,
+                    errorContent)
+            ]);
+        }
+
+        var result = await response.Content.ReadFromJsonAsync(responseTypeInfo, cancellationToken);
+        return Result.Result.Success(result ?? throw new InvalidOperationException("API returned an empty response."));
     }
 
     /// <summary>
@@ -217,12 +293,14 @@ public abstract class HttpClientBase
     /// Applies transient retry behavior based on configured resilience options.
     /// </summary>
     /// <param name="url">The relative or absolute endpoint URL.</param>
+    /// <param name="mapErrorResponse">Optional callback for mapping to error response.</param>
     /// <param name="configureRequest">Optional callback for customizing the outgoing HTTP request (for example, adding per-request headers).</param>
     /// <param name="cancellationToken">A token to cancel the HTTP operation.</param>
     /// <returns>The response body as a byte array.</returns>
     /// <exception cref="HttpRequestException">Thrown when the HTTP response indicates a non-success status code.</exception>
-    protected async Task<byte[]> GetAsync(
+    protected async Task<Result<byte[]>> GetAsync(
         string url,
+        Func<string, IReadOnlyList<Error>>? mapErrorResponse = default,
         Action<HttpRequestMessage>? configureRequest = null,
         CancellationToken cancellationToken = default)
     {
@@ -240,9 +318,80 @@ public abstract class HttpClientBase
             var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
 
             _logger?.LogError("API Error at {Url}: {Status} - {Content}", url, response.StatusCode, errorContent);
-            response.EnsureSuccessStatusCode();
+
+            if (mapErrorResponse is not null)
+            {
+                var mappedErrors = mapErrorResponse(errorContent);
+                if (mappedErrors.Count > 0)
+                {
+                    return Result.Result.Failure<byte[]>(mappedErrors);
+                }
+            }
+
+            return Result.Result.Failure<byte[]>([
+                new Error(
+                    ((int)response.StatusCode).ToString(),
+                    response.ReasonPhrase,
+                    errorContent)
+            ]);
         }
 
-        return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        var result = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        return Result.Result.Success(result);
+    }
+
+    /// <summary>
+    /// Sends a GET request and returns the response body as raw bytes while deserializing structured error responses.
+    /// Applies transient retry behavior based on configured resilience options.
+    /// </summary>
+    /// <typeparam name="TErrorResponse">The error response payload type.</typeparam>
+    /// <param name="url">The relative or absolute endpoint URL.</param>
+    /// <param name="errorTypeInfo">Source-generated JSON metadata for <typeparamref name="TErrorResponse"/>.</param>
+    /// <param name="mapErrorResponse">Optional callback for mapping to error response.</param>
+    /// <param name="configureRequest">Optional callback for customizing the outgoing HTTP request (for example, adding per-request headers).</param>
+    /// <param name="cancellationToken">A token to cancel the HTTP operation.</param>
+    /// <returns>The response body as a byte array.</returns>
+    /// <exception cref="HttpRequestException">Thrown when the HTTP response indicates a non-success status code.</exception>
+    protected async Task<Result<byte[]>> GetAsync<TErrorResponse>(
+        string url,
+        JsonTypeInfo<TErrorResponse> errorTypeInfo,
+        Func<TErrorResponse, IReadOnlyList<Error>>? mapErrorResponse = default,
+        Action<HttpRequestMessage>? configureRequest = default,
+        CancellationToken cancellationToken = default)
+    {
+        using var httpRequest = new HttpRequestMessage(HttpMethod.Get, url);
+        configureRequest?.Invoke(httpRequest);
+
+        _logger?.LogDebug("Sending {Method} request to {Url}.", httpRequest.Method, url);
+
+        using var response = await _httpClient.SendAsync(httpRequest, cancellationToken);
+
+        _logger?.LogDebug("Received {StatusCode} from {Url}.", (int)response.StatusCode, url);
+
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorContent = await response.Content.ReadAsStringAsync(cancellationToken);
+
+            _logger?.LogError("API Error at {Url}: {Status} - {Content}", url, response.StatusCode, errorContent);
+
+            if (!string.IsNullOrWhiteSpace(errorContent))
+            {
+                var parsedError = JsonSerializer.Deserialize(errorContent, errorTypeInfo);
+                if (parsedError is not null && mapErrorResponse is not null)
+                {
+                    return Result.Result.Failure<byte[]>(mapErrorResponse(parsedError));
+                }
+            }
+
+            return Result.Result.Failure<byte[]>([
+                new Error(
+                    ((int)response.StatusCode).ToString(),
+                    response.ReasonPhrase,
+                    errorContent)
+            ]);
+        }
+
+        var result = await response.Content.ReadAsByteArrayAsync(cancellationToken);
+        return Result.Result.Success(result);
     }
 }

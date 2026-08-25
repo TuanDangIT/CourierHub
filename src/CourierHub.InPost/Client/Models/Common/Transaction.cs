@@ -12,7 +12,7 @@ public sealed class Transaction
     /// <summary>
     /// The transaction identifier.
     /// </summary>
-    public required string Id { get; init; }
+    public required int Id { get; init; }
 
     /// <summary>
     /// The transaction status.

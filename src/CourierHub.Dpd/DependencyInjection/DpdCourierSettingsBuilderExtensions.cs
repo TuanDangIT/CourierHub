@@ -1,7 +1,7 @@
 using CourierHub.Core.DependencyInjection;
 using CourierHub.Dpd.Configurations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Http.Resilience;
+//using Microsoft.Extensions.Http.Resilience;
 
 namespace CourierHub.Dpd.DependencyInjection;
 
@@ -43,24 +43,24 @@ public static class DpdCourierSettingsBuilderExtensions
             {
                 httpClient.Timeout = sharedHttpOptions.Timeout;
                 httpClient.BaseAddress = new Uri(sp.GetRequiredService<DpdOptions>().BaseUrl, UriKind.Absolute);
-            })
-            .ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                var handler = new SocketsHttpHandler();
-                if (sharedHttpOptions.PooledConnectionLifetime is { } pooledConnectionLifetime)
-                {
-                    handler.PooledConnectionLifetime = pooledConnectionLifetime;
-                }
-
-                return handler;
-            })
-            .AddStandardResilienceHandler(options =>
-            {
-                options.Retry.MaxRetryAttempts = sharedHttpOptions.Retry.MaxRetryAttempts;
-                options.Retry.Delay = sharedHttpOptions.Retry.Delay;
-                options.Retry.MaxDelay = sharedHttpOptions.Retry.MaxDelay;
-                options.Retry.UseJitter = sharedHttpOptions.Retry.UseJitter;
             });
+            //.ConfigurePrimaryHttpMessageHandler(() =>
+            //{
+            //    var handler = new SocketsHttpHandler();
+            //    if (sharedHttpOptions.PooledConnectionLifetime is { } pooledConnectionLifetime)
+            //    {
+            //        handler.PooledConnectionLifetime = pooledConnectionLifetime;
+            //    }
+
+            //    return handler;
+            //})
+            //.AddStandardResilienceHandler(options =>
+            //{
+            //    options.Retry.MaxRetryAttempts = sharedHttpOptions.Retry.MaxRetryAttempts;
+            //    options.Retry.Delay = sharedHttpOptions.Retry.Delay;
+            //    options.Retry.MaxDelay = sharedHttpOptions.Retry.MaxDelay;
+            //    options.Retry.UseJitter = sharedHttpOptions.Retry.UseJitter;
+            //});
 
         return builder;
     }

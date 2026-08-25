@@ -1,4 +1,5 @@
 ﻿using CourierHub.InPost.Client.Models.Common;
+using CourierHub.InPost.Client.Models.Common.Responses;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -99,12 +100,12 @@ public sealed class CreateParcelResponse
     /// <summary>
     /// Cash on delivery details for the parcel, if applicable. 
     /// </summary>
-    public CashOnDelivery? Cod { get; init; }
+    public CashOnDeliveryResponse? Cod { get; init; }
 
     /// <summary>
     /// Insurance details for the parcel, if applicable. 
     /// </summary>
-    public Insurance? Insurance { get; init; }
+    public InsuranceResponse? Insurance { get; init; }
 
     /// <summary>
     /// The party sending the parcel (shipper).
@@ -134,7 +135,7 @@ public sealed class CreateParcelResponse
     /// <summary>
     /// Parcels that are associated with this shipment. This field contains a list of all parcels that are part of this shipment, including their dimensions, weight, and any other relevant details. 
     /// </summary>
-    public IReadOnlyList<InPostCreateParcelResponseParcel> Parcels { get; init; } = [];
+    public IReadOnlyList<ParcelResponse> Parcels { get; init; } = [];
 
     /// <summary>
     /// The timestamp when the shipment was created in the InPost ShipX system.
@@ -147,20 +148,4 @@ public sealed class CreateParcelResponse
     /// This is updated automatically by the InPost API whenever shipment details change.
     /// </summary>
     public required DateTime UpdatedAt { get; init; }
-}
-
-/// <summary>
-/// Represents a parcel item returned in the InPost create parcel response.
-/// </summary>
-public sealed class InPostCreateParcelResponseParcel : Parcel
-{
-    /// <summary>
-    /// The identifier of the parcel within the shipment.
-    /// </summary>
-    public required string IdentifyNumber { get; init; }
-
-    /// <summary>
-    /// The tracking number assigned to the parcel, if available.
-    /// </summary>
-    public string? TrackingNumber { get; init; }
 }

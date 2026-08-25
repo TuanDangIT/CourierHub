@@ -42,7 +42,7 @@ internal sealed class InPostHttpClient : HttpClientBase
             cancellationToken: cancellationToken);
     }
 
-    public Task<Result<CreateBatchParcelsResponse>> CreateBatchParcelsAsync(CreateBatchParcelsRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<CreateParcelBatchResponse>> CreateParcelBatchAsync(CreateParcelBatchRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -51,8 +51,8 @@ internal sealed class InPostHttpClient : HttpClientBase
         return PostAsync(
             endpoint,
             request,
-            InPostJsonContext.Default.CreateBatchParcelsRequest,
-            InPostJsonContext.Default.CreateBatchParcelsResponse,
+            InPostJsonContext.Default.CreateParcelBatchRequest,
+            InPostJsonContext.Default.CreateParcelBatchResponse,
             InPostJsonContext.Default.ErrorResponse,
             MapInPostErrors,
             cancellationToken: cancellationToken);
@@ -74,7 +74,7 @@ internal sealed class InPostHttpClient : HttpClientBase
             cancellationToken: cancellationToken);
     }
 
-    public Task<GetParcelsResponse> GetParcelsAsync(GetParcelsRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<GetParcelsResponse>> GetParcelsAsync(GetParcelsRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -120,25 +120,39 @@ internal sealed class InPostHttpClient : HttpClientBase
         var queryString = query.Count == 0 ? string.Empty : "?" + string.Join("&", query);
         var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments{queryString}";
 
-        return GetAsync(endpoint, InPostJsonContext.Default.GetParcelsResponse, cancellationToken: cancellationToken);
+        return GetAsync(
+            endpoint,
+            InPostJsonContext.Default.GetParcelsResponse,
+            InPostJsonContext.Default.ErrorResponse,
+            MapInPostErrors,
+            cancellationToken: cancellationToken);
     }
 
-    public Task<GetBatchParcelsResponse> GetBatchParcelsAsync(GetBatchParcelsRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<GetParcelBatchResponse>> GetBatchParcelsAsync(GetParcelBatchRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var endpoint = $"v1/batches/{Uri.EscapeDataString(request.Id.ToString())}";
 
-        return GetAsync(endpoint, InPostJsonContext.Default.GetBatchParcelsResponse, cancellationToken: cancellationToken);
+        return GetAsync(
+            endpoint,
+            InPostJsonContext.Default.GetParcelBatchResponse,
+            InPostJsonContext.Default.ErrorResponse,
+            MapInPostErrors,
+            cancellationToken: cancellationToken);
     }
 
-    public Task<byte[]> GetLabelAsync(GetLabelRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<byte[]>> GetLabelAsync(GetLabelRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         var endpoint = $"v1/shipments/{Uri.EscapeDataString(request.ShipmentId)}/label?format={Uri.EscapeDataString(request.Format.ToLowerInvariant())}&type={Uri.EscapeDataString(request.Type.ToLowerInvariant())}";
 
-        return GetAsync(endpoint, cancellationToken: cancellationToken);
+        return GetAsync(
+            endpoint,
+            InPostJsonContext.Default.ErrorResponse,
+            MapInPostErrors,
+            cancellationToken: cancellationToken);
     }
 
     /// <summary>
