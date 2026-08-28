@@ -128,7 +128,7 @@ internal sealed class InPostHttpClient : HttpClientBase
             cancellationToken: cancellationToken);
     }
 
-    public Task<Result<GetParcelBatchResponse>> GetBatchParcelsAsync(GetParcelBatchRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<GetParcelBatchResponse>> GetParcelBatchAsync(GetParcelBatchRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 

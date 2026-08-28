@@ -113,13 +113,13 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
         }
     }
 
-    public async Task<Result<GetParcelBatchResponse>> GetBatchParcelsAsync(GetParcelBatchRequest request)
+    public async Task<Result<GetParcelBatchResponse>> GetParcelBatchAsync(GetParcelBatchRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         try
         {
-            var result = await _httpClient.GetBatchParcelsAsync(request);
+            var result = await _httpClient.GetParcelBatchAsync(request);
             return result;
         }
         catch (Exception ex)

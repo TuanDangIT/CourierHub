@@ -51,5 +51,5 @@ public interface IParcelService
     /// </summary>
     /// <param name="request">The batch lookup request.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the batch response.</returns>
-    Task<Result<GetParcelBatchResponse>> GetBatchParcelsAsync(GetParcelBatchRequest request);
+    Task<Result<GetParcelBatchResponse>> GetParcelBatchAsync(GetParcelBatchRequest request);
 }
