@@ -8,7 +8,7 @@ namespace CourierHub.InPost.Client.Models.Requests;
 /// <summary>
 /// InPost batch creation request model for creating multiple shipments at once.
 /// </summary>
-public sealed class CreateParcelBatchRequest
+public sealed class CreateShipmentBatchRequest
 {
     /// <summary>
     /// Applies the chosen offer to all shipments in the batch without automatically paying them.

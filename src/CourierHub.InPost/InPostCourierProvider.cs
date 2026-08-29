@@ -14,7 +14,7 @@ public sealed class InPostCourierProvider : CourierProviderBase, IInpostCourierP
     /// <summary>
     /// Parcel service for managing shipments and related operations with the InPost API.
     /// </summary>
-    public IParcelService Parcels { get; }
+    public IShipmentService Shipments { get; }
 
     /// <summary>
     /// Initializes a new instance of the InPostCourierProvider class with the specified dependencies.
@@ -31,6 +31,6 @@ public sealed class InPostCourierProvider : CourierProviderBase, IInpostCourierP
         ArgumentNullException.ThrowIfNull(inPostOptions);
 
         var inPostHttpClient = new InPostHttpClient(httpClient, inPostOptions, loggerFactory?.CreateLogger<InPostHttpClient>());
-        Parcels = new ParcelService(inPostHttpClient, loggerFactory?.CreateLogger<ParcelService>());
+        Shipments = new ShipmentService(inPostHttpClient, loggerFactory?.CreateLogger<ShipmentService>());
     }
 }

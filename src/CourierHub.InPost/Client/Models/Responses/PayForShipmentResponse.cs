@@ -8,7 +8,7 @@ namespace CourierHub.InPost.Client.Models.Responses;
 /// <summary>
 /// InPost response model returned after buying an offer for a shipment.
 /// </summary>
-public sealed class PayForParcelResponse
+public sealed class PayForShipmentResponse
 {
     /// <summary>
     /// The URI/href reference for this shipment resource in the InPost API.
@@ -18,7 +18,7 @@ public sealed class PayForParcelResponse
     /// <summary>
     /// The identifier of the shipment in the InPost system.
     /// </summary>
-    public required string Id { get; init; }
+    public required int Id { get; init; }
 
     /// <summary>
     /// Parcels included in the shipment.

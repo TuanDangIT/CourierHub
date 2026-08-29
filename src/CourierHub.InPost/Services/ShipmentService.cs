@@ -11,31 +11,31 @@ using System.Threading.Tasks;
 
 namespace CourierHub.InPost.Services;
 
-internal sealed class ParcelService : CourierServiceBase, IParcelService
+internal sealed class ShipmentService : CourierServiceBase, IShipmentService
 {
     private readonly InPostHttpClient _httpClient;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="ParcelService"/> class.
+    /// Initializes a new instance of the <see cref="ShipmentService"/> class.
     /// </summary>
     /// <param name="httpClient">The InPost HTTP client used to call the API.</param>
     /// <param name="logger">The logger instance used for operation logging.</param>
-    public ParcelService(InPostHttpClient httpClient, ILogger<ParcelService>? logger = default) : base(logger)
+    public ShipmentService(InPostHttpClient httpClient, ILogger<ShipmentService>? logger = default) : base(logger)
     {
         _httpClient = httpClient;
     }
 
-    public async Task<Result<CreateParcelResponse>> CreateParcelAsync(CreateParcelRequest request)
+    public async Task<Result<CreateShipmentResponse>> CreateShipmentAsync(CreateShipmentRequest request)
     {
         //try
         //{
             ArgumentNullException.ThrowIfNull(request);
 
-            var validationResult = new CreateParcelRequestValidator().Validate(request);
+            var validationResult = new CreateShipmentRequestValidator().Validate(request);
 
             if (validationResult.IsFailure)
             {
-                return Result.Failure<CreateParcelResponse>(validationResult.Errors);
+                return Result.Failure<CreateShipmentResponse>(validationResult.Errors);
             }
 
             var result = await _httpClient.CreateShipmentAsync(request);
@@ -49,35 +49,36 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
         //}
     }
 
-    public async Task<Result<CreateParcelBatchResponse>> CreateParcelBatchAsync(CreateParcelBatchRequest request)
+    public async Task<Result<CreateShipmentBatchResponse>> CreateShipmentBatchAsync(CreateShipmentBatchRequest request)
     {
         try
         {
-            var result = await _httpClient.CreateParcelBatchAsync(request);
+            var result = await _httpClient.CreateShipmentBatchAsync(request);
             return result;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to create batch parcels.");
+            _logger?.LogError(ex, "Failed to create batch shipments.");
             var error = new Error("ServerError", "Server error", "An unexpected error occurred while creating batch parcels.");
-            return Result.Failure<CreateParcelBatchResponse>([error]);
+            return Result.Failure<CreateShipmentBatchResponse>([error]);
         }
     }
 
-    public async Task<Result<PayForParcelResponse>> PayForParcelAsync(PayForParcelRequest request)
+    public async Task<Result<PayForShipmentResponse>> PayForShipmentAsync(string shipmentId, PayForShipmentRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(shipmentId);
 
         try
         {
-            var result = await _httpClient.PayForParcelAsync(request);
+            var result = await _httpClient.PayForShipmentAsync(shipmentId, request);
             return result;
         }
         catch (Exception ex)
         {
             _logger?.LogError(ex, "Failed to pay for parcel.");
             var error = new Error("ServerError", "Server error", "An unexpected error occurred while paying for the parcel.");
-            return Result.Failure<PayForParcelResponse>([error]);
+            return Result.Failure<PayForShipmentResponse>([error]);
         }
     }
 
@@ -97,34 +98,34 @@ internal sealed class ParcelService : CourierServiceBase, IParcelService
         }
     }
 
-    public async Task<Result<GetParcelsResponse>> GetParcelsAsync(GetParcelsRequest request)
+    public async Task<Result<GetShipmentsResponse>> GetShipmentsAsync(GetShipmentsRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         try
         {
-            var result = await _httpClient.GetParcelsAsync(request);
+            var result = await _httpClient.GetShipmentsAsync(request);
             return result;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to get parcels");
+            _logger?.LogError(ex, "Failed to get shipments");
             throw;
         }
     }
 
-    public async Task<Result<GetParcelBatchResponse>> GetParcelBatchAsync(GetParcelBatchRequest request)
+    public async Task<Result<GetShipmentBatchResponse>> GetShipmentBatchAsync(GetShipmentBatchRequest request)
     {
         ArgumentNullException.ThrowIfNull(request);
 
         try
         {
-            var result = await _httpClient.GetParcelBatchAsync(request);
+            var result = await _httpClient.GetShipmentBatchAsync(request);
             return result;
         }
         catch (Exception ex)
         {
-            _logger?.LogError(ex, "Failed to get batch parcels");
+            _logger?.LogError(ex, "Failed to get batch shipments");
             throw;
         }
     }

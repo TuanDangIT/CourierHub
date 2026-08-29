@@ -6,7 +6,7 @@ namespace CourierHub.InPost.Client.Models.Responses;
 /// <summary>
 /// InPost shipments search/list response wrapper.
 /// </summary>
-public sealed class GetParcelsResponse
+public sealed class GetShipmentsResponse
 {
     /// <summary>
     /// The URI/href reference for this query in the InPost API.

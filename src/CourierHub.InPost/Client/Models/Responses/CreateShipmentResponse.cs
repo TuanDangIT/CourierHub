@@ -9,7 +9,7 @@ namespace CourierHub.InPost.Client.Models.Responses;
 /// <summary>
 /// InPost specific response model for a successful parcel creation. Contains all details returned by the InPost API.
 /// </summary>
-public sealed class CreateParcelResponse
+public sealed class CreateShipmentResponse
 {
     /// <summary>
     /// The URI/href reference for this shipment resource in the InPost API.

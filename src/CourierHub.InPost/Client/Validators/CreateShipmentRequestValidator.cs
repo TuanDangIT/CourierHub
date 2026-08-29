@@ -8,9 +8,9 @@ using System.Text;
 
 namespace CourierHub.InPost.Client.Validators;
 
-internal class CreateParcelRequestValidator : AbstractValidator<CreateParcelRequest>
+internal class CreateShipmentRequestValidator : AbstractValidator<CreateShipmentRequest>
 {
-    public CreateParcelRequestValidator()
+    public CreateShipmentRequestValidator()
     {
         RuleFor("Receiver", x => x.Receiver)
             .Required()

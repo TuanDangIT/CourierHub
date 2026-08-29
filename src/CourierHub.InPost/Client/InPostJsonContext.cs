@@ -14,16 +14,16 @@ namespace CourierHub.InPost.Client;
     DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
     PropertyNameCaseInsensitive = true,
     GenerationMode = JsonSourceGenerationMode.Metadata)]
-[JsonSerializable(typeof(CreateParcelRequest))]
-[JsonSerializable(typeof(CreateParcelBatchRequest))]
-[JsonSerializable(typeof(CreateParcelResponse))]
-[JsonSerializable(typeof(CreateParcelBatchResponse))]
-[JsonSerializable(typeof(GetParcelsRequest))]
-[JsonSerializable(typeof(GetParcelsResponse))]
-[JsonSerializable(typeof(GetParcelBatchRequest))]
-[JsonSerializable(typeof(GetParcelBatchResponse))]
-[JsonSerializable(typeof(PayForParcelRequest))]
-[JsonSerializable(typeof(PayForParcelResponse))]
+[JsonSerializable(typeof(CreateShipmentRequest))]
+[JsonSerializable(typeof(CreateShipmentBatchRequest))]
+[JsonSerializable(typeof(CreateShipmentResponse))]
+[JsonSerializable(typeof(CreateShipmentBatchResponse))]
+[JsonSerializable(typeof(GetShipmentsRequest))]
+[JsonSerializable(typeof(GetShipmentsResponse))]
+[JsonSerializable(typeof(GetShipmentBatchRequest))]
+[JsonSerializable(typeof(GetShipmentBatchResponse))]
+[JsonSerializable(typeof(PayForShipmentRequest))]
+[JsonSerializable(typeof(PayForShipmentResponse))]
 [JsonSerializable(typeof(ErrorResponse))]
 internal partial class InPostJsonContext : JsonSerializerContext
 {

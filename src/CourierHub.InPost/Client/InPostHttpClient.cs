@@ -26,55 +26,56 @@ internal sealed class InPostHttpClient : HttpClientBase
         _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", _inPostOptions.ApiKey);
     }
 
-    public Task<Result<CreateParcelResponse>> CreateShipmentAsync(CreateParcelRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<CreateShipmentResponse>> CreateShipmentAsync(CreateShipmentRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/shipments";
+        var endpoint = $"v1/organizations/{Uri.EscapeDataString(_inPostOptions.OrganizationId)}/shipments";
 
         return PostAsync(
             endpoint,
             request,
-            InPostJsonContext.Default.CreateParcelRequest,
-            InPostJsonContext.Default.CreateParcelResponse,
+            InPostJsonContext.Default.CreateShipmentRequest,
+            InPostJsonContext.Default.CreateShipmentResponse,
             InPostJsonContext.Default.ErrorResponse,
             MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
-    public Task<Result<CreateParcelBatchResponse>> CreateParcelBatchAsync(CreateParcelBatchRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<CreateShipmentBatchResponse>> CreateShipmentBatchAsync(CreateShipmentBatchRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        var endpoint = $"v1/organizations/{_inPostOptions.OrganizationId}/batches";
+        var endpoint = $"v1/organizations/{Uri.EscapeDataString(_inPostOptions.OrganizationId)}/batches";
 
         return PostAsync(
             endpoint,
             request,
-            InPostJsonContext.Default.CreateParcelBatchRequest,
-            InPostJsonContext.Default.CreateParcelBatchResponse,
+            InPostJsonContext.Default.CreateShipmentBatchRequest,
+            InPostJsonContext.Default.CreateShipmentBatchResponse,
             InPostJsonContext.Default.ErrorResponse,
             MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
-    public Task<Result<PayForParcelResponse>> PayForParcelAsync(PayForParcelRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<PayForShipmentResponse>> PayForShipmentAsync(string shipmentId, PayForShipmentRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(shipmentId);
 
-        var endpoint = $"v1/shipments/{Uri.EscapeDataString(request.ShipmentId)}/buy";
+        var endpoint = $"v1/shipments/{Uri.EscapeDataString(shipmentId)}/buy";
 
         return PostAsync(
             endpoint,
             request,
-            InPostJsonContext.Default.PayForParcelRequest,
-            InPostJsonContext.Default.PayForParcelResponse,
+            InPostJsonContext.Default.PayForShipmentRequest,
+            InPostJsonContext.Default.PayForShipmentResponse,
             InPostJsonContext.Default.ErrorResponse,
             MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
-    public Task<Result<GetParcelsResponse>> GetParcelsAsync(GetParcelsRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<GetShipmentsResponse>> GetShipmentsAsync(GetShipmentsRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -122,13 +123,13 @@ internal sealed class InPostHttpClient : HttpClientBase
 
         return GetAsync(
             endpoint,
-            InPostJsonContext.Default.GetParcelsResponse,
+            InPostJsonContext.Default.GetShipmentsResponse,
             InPostJsonContext.Default.ErrorResponse,
             MapInPostErrors,
             cancellationToken: cancellationToken);
     }
 
-    public Task<Result<GetParcelBatchResponse>> GetParcelBatchAsync(GetParcelBatchRequest request, CancellationToken cancellationToken = default)
+    public Task<Result<GetShipmentBatchResponse>> GetShipmentBatchAsync(GetShipmentBatchRequest request, CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
@@ -136,7 +137,7 @@ internal sealed class InPostHttpClient : HttpClientBase
 
         return GetAsync(
             endpoint,
-            InPostJsonContext.Default.GetParcelBatchResponse,
+            InPostJsonContext.Default.GetShipmentBatchResponse,
             InPostJsonContext.Default.ErrorResponse,
             MapInPostErrors,
             cancellationToken: cancellationToken);

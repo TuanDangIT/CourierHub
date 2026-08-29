@@ -13,5 +13,5 @@ public interface IInpostCourierProvider
     /// <summary>
     /// Parcel service for managing parcels.
     /// </summary>
-    IParcelService Parcels { get; }
+    IShipmentService Shipments { get; }
 }

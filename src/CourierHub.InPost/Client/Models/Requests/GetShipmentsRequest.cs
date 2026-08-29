@@ -7,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Requests;
 /// <summary>
 /// InPost shipments list/search request model.
 /// </summary>
-public sealed class GetParcelsRequest
+public sealed class GetShipmentsRequest
 {
     /// <summary>
     /// Shipment identifiers to filter by.

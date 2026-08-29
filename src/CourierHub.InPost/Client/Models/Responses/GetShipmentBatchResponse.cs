@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace CourierHub.InPost.Client.Models.Responses;
 
 /// <summary>
-/// InPost batch creation response model.
+/// InPost batch lookup response model.
 /// </summary>
-public sealed class CreateParcelBatchResponse
+public sealed class GetShipmentBatchResponse
 {
     /// <summary>
     /// The URI/href reference for this batch resource in the InPost API.

@@ -7,7 +7,7 @@ namespace CourierHub.InPost.Client.Models.Requests;
 /// <summary>
 /// InPost batch lookup request model.
 /// </summary>
-public sealed class GetParcelBatchRequest
+public sealed class GetShipmentBatchRequest
 {
     /// <summary>
     /// Batch identifier.

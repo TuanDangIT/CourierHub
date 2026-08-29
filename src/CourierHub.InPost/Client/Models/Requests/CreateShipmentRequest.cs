@@ -8,7 +8,7 @@ namespace CourierHub.InPost.Client.Models.Requests;
 /// <summary>
 /// InPost specific request model for creating a new parcel. This class encapsulates all the necessary information required by InPost to process a parcel creation request, including sender and receiver details, parcel information, service code, and additional attributes specific to InPost's requirements.
 /// </summary>
-public sealed class CreateParcelRequest
+public sealed class CreateShipmentRequest
 {
     /// <summary>
     /// The party sending the parcel (shipper).
